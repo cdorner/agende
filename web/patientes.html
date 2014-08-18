@@ -1,0 +1,84 @@
+<div>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Nome</th>
+				<th>Nascimento</th>
+				<th>Contato</th>
+				<th>Convênio</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="patient in patients">
+				<td>{{patient.name}}</td>
+				<td>{{patient.birth | date:format="dd/MM/y"}}</td>
+				<td>{{patient.contacts.phone}}  / {{patient.contacts.cell}} / {{patient.contacts.email}}</td>
+				<td>{{patient.healthCare.name}} - {{patient.healthCare.number}}</td>
+				<td>
+					<button id="btn-edit" ng-click="openEdit(patient)" class="btn btn-primary">Editar</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div id="modal" class="modal" data-show="false">
+	<div class="modal-dialog" data-backdrop="false">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title">Edição paciente {{patient.name}}</h4>
+			</div>
+			<div class="modal-body">
+				<form name="formPatient" novalidate class="simple-form form-horizontal" role="form">
+					<div class="form-group">
+						<label for="patient">Nome *</label>
+						<input type="text" class="form-control" id="patient" placeholder="Nome do paciente"
+							ng-model="patient.name" required ></input>
+					</div>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" class="form-control" id="email" placeholder="Email"
+							ng-model="patient.contacts.email"></input>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4">
+							<label for="birth">Nascimento *</label>
+							<input type="date" class="form-control" id="birth" placeholder="Nascimento"
+								ng-model="patient.birth" required ></input>
+						</div>
+						<div class="col-sm-4">
+							<label for="tel">Telefone *</label>
+							<input type="tel" class="form-control" id="phone" placeholder="Telefone"
+								ng-model="patient.contacts.phone" required ></input>
+						</div>
+						<div class="col-sm-4">
+							<label for="cell">Celular</label>
+							<input type="tel" class="form-control" id="cell" placeholder="Celular"
+								ng-model="patient.contacts.cell"></input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div>
+							<label for="convenio">Convênio</label>
+							<input type="text" class="form-control" id="convenio" placeholder="Convênio"
+								ng-model="patient.healthCare.name" ></input>
+						</div>
+						<div>
+							<label for="convenio">Nr. Carteirinha</label>
+							<input type="text" class="form-control" id="convenio" placeholder="Carteirinha"
+								ng-model="patient.healthCare.number" ></input>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" ng-click="dismiss()" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-primary" ng-click="update()" ng-disabled="formPatient.$invalid">Salvar</button>
+			</div>
+		</div>
+	</div>
+</div>

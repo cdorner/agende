@@ -1,0 +1,40 @@
+{
+  "name": "angucomplete-alt",
+  "version": "0.0.12",
+  "homepage": "http://ghiden.github.io/angucomplete-alt/",
+  "authors": [
+    "Hidenari Nozaki <hidenari@gmail.com>"
+  ],
+  "description": "Awesome Autocompleteness for AngularJS",
+  "keywords": [
+    "autocomplete",
+    "typeahead",
+    "angularjs"
+  ],
+  "license": "MIT",
+  "main": "./angucomplete-alt.js",
+  "ignore": [
+    "example",
+    "bower_components",
+    "node_modules",
+    "**/.*",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": ">=1.2.0"
+  },
+  "devDependencies": {
+    "angular-mocks": ">=1.2.0",
+    "jquery": "~2.1.0"
+  },
+  "_release": "0.0.12",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.12",
+    "commit": "efe8356cb97c5aa67b3111ad5ca54b97af0c984e"
+  },
+  "_source": "git://github.com/ghiden/angucomplete-alt.git",
+  "_target": "0.0.x",
+  "_originalSource": "angucomplete-alt"
+}

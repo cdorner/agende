@@ -1,4 +1,9 @@
 agende
 ======
 
+known problems
+
+- Problemn with angular and html 5 input date, the format input only accept values with format yyyy-mm-dd, angular 1.3 is
+	working on that, since we only have 1 input date let's wait for a while. 
+
 agende

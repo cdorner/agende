@@ -1,0 +1,155 @@
+<div>
+	<form name="form" class="form-horizontal" role="form" novalidate="novalidate">
+		<div class="form-group">
+			<label for="doctor" class="col-sm-2 control-label">Médico</label>
+			<div class="col-sm-3">
+				<select id="doctor" ng-model="doctor" ng-options="doctor.name for doctor in doctors" class="form-control" required>
+					<option value="">-- Selecione --</option>
+				</select>
+			</div>
+			<button type="button" class="btn btn-primary" ng-hide="doctor._id" ng-click="openNewDoctorModal()" >Novo</button>
+			<button type="button" class="btn btn-primary" ng-show="doctor._id" ng-click="editDoctorModal()" >Editar</button>
+		</div>
+		<div class="form-group" ng-show="doctor._id">
+			<label for="office" class="col-sm-2 control-label">Consultório</label>
+			<div class="col-sm-3">
+				<select id="doctor" ng-model="office" ng-options="office.name for office in offices" class="form-control" required>
+					<option value="">-- Selecione --</option>
+				</select>
+			</div>
+			<button type="button" class="btn btn-primary" ng-hide="office._id" ng-click="openNewOfficeModal()" >Novo</button>
+			<button type="button" class="btn btn-primary" ng-show="office._id" ng-click="editOfficeModal()" >Editar</button>
+		</div>
+		<div ng-show="office._id">
+			<div class="form-group">
+				<label for="time" class="col-sm-2 control-label">Tempo de consulta</label>
+				<div class="col-sm-1">
+					<input type="number" class="form-control" id="time" placeholder="Tempo de consulta" required
+						ng-model="office.configuration.appointmentTime" min="5"></input>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="first_appointment" class="col-sm-2 control-label">Primeira consulta às?</label>
+				<div class="col-sm-1">
+					<input type="time" class="form-control" id="time" placeholder="Horario da primeira consulta" required
+						ng-model="office.configuration.firstAppointmentHour"></input>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="last_appointment" class="col-sm-2 control-label">Última consulta às?</label>
+				<div class="col-sm-1">
+					<input type="time" class="form-control" id="time" placeholder="Horario da última consulta" required
+						ng-model="office.configuration.lastAppointmentHour"></input>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="week_days" class="col-sm-2 control-label">Dias da semana</label>
+				<label ng-repeat="day in office.configuration.weekDays">
+  					<input type="checkbox" value="{{day.day}}" ng-model="day.selected"> {{day.day}}
+				</label>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" ng-click="save()" class="btn btn-default" ng-disabled="form.$invalid">Salvar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div id="new-doctor" class="modal" data-show="false">
+	<div class="modal-dialog" data-backdrop="false">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title">Novo Médico</h4>
+			</div>
+			<div class="modal-body">
+				<form name="formDoctor" novalidate class="simple-form form-horizontal" role="form">
+					<div class="form-group">
+						<label for="doctor">Título *</label>
+						<select id="doctor" ng-model="newDoctor.sex" class="form-control" required>
+							<option value="Dr.">Dr.</option>
+							<option value="Dra.">Dra.</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="doctor">Nome *</label>
+						<input type="text" class="form-control" id="doctor" placeholder="Nome do médico"
+							ng-model="newDoctor.name"></input>
+					</div>
+					<div class="form-group">
+						<label for="specialty">Especialidade </label>
+						<input type="text" class="form-control" id="specialty" placeholder="Especialidade"
+							ng-model="newDoctor.specialty"></input>
+					</div>
+					<div class="form-group">
+						<label for="tel">Telefone *</label>
+						<input type="tel" class="form-control" id="phone" placeholder="Telefone"
+							ng-model="newDoctor.contacts.phone" required></input>
+					</div>
+					<div class="form-group">
+						<label for="cell">Celular</label>
+						<input type="tel" class="form-control" id="cell" placeholder="Celular"
+							ng-model="newDoctor.contacts.cell"></input>
+					
+					</div>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" class="form-control" id="email" placeholder="Email"
+							ng-model="newDoctor.contacts.email"></input>
+					</div>
+					<div class="form-group">
+						<label for="password">Senha</label>
+						<input type="password" class="form-control" id="password" placeholder="Senha do email"
+							ng-model="newDoctor.contacts.emailPassword"></input>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-primary" ng-show="newDoctor._id" ng-click="editDoctor()" ng-disabled="formDoctor.$invalid">Salvar</button>
+				<button type="button" class="btn btn-primary" ng-hide="newDoctor._id" ng-click="saveDoctor()" ng-disabled="formDoctor.$invalid">Salvar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="new-office" class="modal" data-show="false">
+	<div class="modal-dialog" data-backdrop="false">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title">Novo Consultório</h4>
+			</div>
+			<div class="modal-body">
+				<form name="formOffice" novalidate class="simple-form form-horizontal" role="form">
+					<div class="form-group">
+						<label for="doctor">Nome *</label>
+						<input type="text" class="form-control" id="office-name" placeholder="Nome do consultorio"
+							ng-model="office.name"></input>
+					</div>
+					<div class="form-group">
+						<label for="specialty">Endereço </label>
+						<input type="text" class="form-control" id="address" placeholder="Endereço"
+							ng-model="office.address"></input>
+					</div>
+					<div class="form-group">
+						<label for="tel">Telefone </label>
+						<input type="tel" class="form-control" id="phone" placeholder="Telefone"
+							ng-model="office.contacts.phone"></input>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-primary" ng-show="office._id" ng-click="save()" ng-disabled="formOffice.$invalid">Salvar</button>
+				<button type="button" class="btn btn-primary" ng-hide="office._id" ng-click="saveOffice()" ng-disabled="formOffice.$invalid">Salvar</button>
+			</div>
+		</div>
+	</div>
+</div>

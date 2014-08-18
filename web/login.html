@@ -1,0 +1,73 @@
+<html ng-app="login">
+<head>
+	<script type="text/javascript" src="/bower_components/angular/angular.min.js"></script>
+	<script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
+	
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.css.map">
+	
+	<style type="text/css">
+		.login {
+			margin-top: 15%;
+			margin-left: 40%;
+			width: 400px;
+			padding: 30px;
+			
+			background: rgb(216,224,222); /* Old browsers */
+			background: -moz-linear-gradient(top,  rgba(216,224,222,1) 0%, rgba(174,191,188,1) 22%, rgba(153,175,171,1) 33%, rgba(142,166,162,1) 50%, rgba(130,157,152,1) 67%, rgba(78,92,90,1) 82%, rgba(14,14,14,1) 100%); /* FF3.6+ */
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(216,224,222,1)), color-stop(22%,rgba(174,191,188,1)), color-stop(33%,rgba(153,175,171,1)), color-stop(50%,rgba(142,166,162,1)), color-stop(67%,rgba(130,157,152,1)), color-stop(82%,rgba(78,92,90,1)), color-stop(100%,rgba(14,14,14,1))); /* Chrome,Safari4+ */
+			background: -webkit-linear-gradient(top,  rgba(216,224,222,1) 0%,rgba(174,191,188,1) 22%,rgba(153,175,171,1) 33%,rgba(142,166,162,1) 50%,rgba(130,157,152,1) 67%,rgba(78,92,90,1) 82%,rgba(14,14,14,1) 100%); /* Chrome10+,Safari5.1+ */
+			background: -o-linear-gradient(top,  rgba(216,224,222,1) 0%,rgba(174,191,188,1) 22%,rgba(153,175,171,1) 33%,rgba(142,166,162,1) 50%,rgba(130,157,152,1) 67%,rgba(78,92,90,1) 82%,rgba(14,14,14,1) 100%); /* Opera 11.10+ */
+			background: -ms-linear-gradient(top,  rgba(216,224,222,1) 0%,rgba(174,191,188,1) 22%,rgba(153,175,171,1) 33%,rgba(142,166,162,1) 50%,rgba(130,157,152,1) 67%,rgba(78,92,90,1) 82%,rgba(14,14,14,1) 100%); /* IE10+ */
+			background: linear-gradient(to bottom,  rgba(216,224,222,1) 0%,rgba(174,191,188,1) 22%,rgba(153,175,171,1) 33%,rgba(142,166,162,1) 50%,rgba(130,157,152,1) 67%,rgba(78,92,90,1) 82%,rgba(14,14,14,1) 100%); /* W3C */
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e0de', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+		}
+	</style>
+</head>
+<body ng-controller="LoginController">
+	<div class="container-fluid">
+		<form name="login" novalidate class="simple-form form-horizontal login" role="form">
+			<div class="form-group">
+				<div class="col-sm-10">
+					<label for="username">Username *</label>
+					<input type="text" class="form-control" id="username" placeholder="username"
+						ng-model="login.username" required></input>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-10">
+					<label for="password">Senha *</label>
+					<input type="password" class="form-control" id="password" placeholder="Senha"
+						ng-model="login.password" required></input>
+				</div>
+			</div>
+			<div class="form-group">
+				<button type="button" class="btn btn-primary pull-right" ng-click="do()" ng-disabled="login.$invalid">Login</button>
+			</div>
+			<div id="msg" class="alert alert-danger" ng-hide="message == null">{{message}}</div>
+		</form>
+	</div>
+</body>
+	
+	<script type="text/javascript">
+		var main = angular.module("login", ["ngCookies"])
+
+			.controller('LoginController', ["$scope", "$http", "$cookieStore", function($scope, $http, $cookieStore) {
+				$scope.login = {};
+			
+				$scope.do = function(){
+					$scope.message = null;
+					$http.post("/api/login/", $scope.login)
+					.success(function(data, status, headers, config){
+						$cookieStore.put('userId', data.user);
+						window.location.href = "/home.html";
+					})
+					.error(function(data, status, headers, config) {
+						$scope.message = data;
+					})
+				};
+			}]
+		);
+	</script>
+</html>
