@@ -4,8 +4,8 @@ var app = require('../app');
 
 var schemas = require('../routes/agendaSchema');
 
-app.set('port', process.env.npm_package_config_port || 8888);
-schemas.set('db', process.env.npm_package_config_db || 'mongodb://localhost/agende');
+app.set('port', 3001);
+schemas.set('db', 'mongodb://localhost/drakarinacavalheiro');
 schemas.set('debug', process.env.npm_package_config_dbdebug || false);
 schemas.init();
 

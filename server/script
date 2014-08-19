@@ -1,0 +1,2 @@
+pm2 start bin/draandressadorner -e /var/logs/agende/draandressadorner/err.log -o /var/logs/agende/draandressadorner/out.log --merge-logs
+pm2 start bin/drakarinacavalheiro -e /var/logs/agende/draandressacavalheiro/err.log -o /var/logs/agende/draandressacavalheiro/out.log --merge-logs

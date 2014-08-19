@@ -1,26 +1,26 @@
 {
-  "name": "app",
+  "name": "agende",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "pm2 start ./bin/www"
   },
   "config": {
-	    "port": "3000",
-	    "db" : "mongodb://localhost/dra-andressa"
+//	    "port": "3000",
+//	    "db" : "mongodb://localhost/dra-andressa"
   },
   "author": {
 	    "name": "Christian Dorner",
 	    "email": "christian.dorner@gmail.com",
-	    "url": "http://www.openshift.com/"
+	    "url": "https://github.com/cdorner/"
   },
   "repository": {
 	    "type": "git",
-	    "url": "https://github.com/openshift/origin-server"
+	    "url": "https://github.com/cdorner/agende"
   },
   "engines": {
-	    "node": ">= 0.6.0",
-	    "npm": ">= 1.0.0"
+	    "nodejs": ">= 0.10.25",
+	    "npm": ">= 1.3.10"
   },
   "dependencies": {
     "express": "~4.2.0",
