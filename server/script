@@ -1,2 +1,7 @@
 pm2 start bin/draandressadorner -e /var/logs/agende/draandressadorner/err.log -o /var/logs/agende/draandressadorner/out.log --merge-logs
 pm2 start bin/drakarinacavalheiro -e /var/logs/agende/draandressacavalheiro/err.log -o /var/logs/agende/draandressacavalheiro/out.log --merge-logs
+
+
+
+-- new user
+curl -H "Content-Type: application/json" --insecure --silent --show-error --fail --request POST --cookie userId=53f397165415ed355303ddc9 --data '{"name": "andressa", "username":"Andressa R. Dorner", "password": "123"}' http://localhost:3000/users

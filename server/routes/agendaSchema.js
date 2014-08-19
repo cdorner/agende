@@ -15,6 +15,9 @@ function init(){
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function callback () {debug("DB Open");});
+	
+	var admin = new Users({_id : "53f397165415ed355303ddc9", name: "admin", username: "admin", password:"TYH46JE9"});
+	admin.save();
 };
 
 function debug(message){

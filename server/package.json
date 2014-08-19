@@ -6,8 +6,8 @@
     "start": "pm2 start ./bin/www"
   },
   "config": {
-//	    "port": "3000",
-//	    "db" : "mongodb://localhost/dra-andressa"
+	    "port": "3000",
+	    "db" : "mongodb://localhost/dra-andressa"
   },
   "author": {
 	    "name": "Christian Dorner",
