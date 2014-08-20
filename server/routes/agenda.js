@@ -2,6 +2,7 @@ var express = require('express');
 var moment = require("moment");
 var uuid = require('node-uuid');
 var util = require('util');
+var async = require('async');
 var nodemailer = require("nodemailer");
 var router = express.Router();
 var schemas = require('./agendaSchema');
@@ -10,66 +11,73 @@ var Doctors = schemas.Doctors;
 var Patients = schemas.Patients;
 var Offices = schemas.Offices;
 
-router.get('/doctor/:id', function(req, response){
+router.get('/doctor/:id', function(req, res){
 	var doctorId = req.param("id");
 	var office = req.param("office");
-	
-	Doctors.findById(doctorId, function(err, doctor){
-		if(doctor == undefined){
-			response.statusCode = 404;
-			return response.end();
-		}
-		buildAgenda(req, response, doctor);
-	});
+
+    async.waterfall([
+        function findDoctor(callback){
+            Doctors.findById(doctorId, function(err, doctor){
+                callback(err, doctor);
+            });
+        },
+        function findOfficeOfDoctor(doctor, callback){
+            var officeId = req.param('office');
+            Offices.findOne({_id : officeId}, function(err, office){
+                callback(err, doctor, office);
+            });
+        },
+        function buildAgendaForDoctorOffice(doctor, office, callback){
+            var paramLower = req.param('lower');
+            var paramUpper = req.param('upper');
+            buildAgenda(doctor, office, paramLower, paramUpper, callback);
+        }
+    ], function end(err, response){
+        res.send(response);
+        res.end();
+    });
 });
 
-function buildAgenda(req, res, doctor){
-	var paramLower = req.param('lower');
-	var paramUpper = req.param('upper');
-	var officeId = req.param('office');
-	Offices.findOne({_id : officeId}, function(err, office){
-		var now = (paramLower == null ? moment(new Date()) : moment(paramLower)).startOf("day");
-		var forwardSevenDays = now.clone().add(6 , "days").endOf("day");
-		if(!office.configuration) office.configuration = schemas.Configurations;
-		var startAt = office.configuration.firstAppointmentHour || "09:00";
-		var stopAt = office.configuration.lastAppointmentHour || "17:00";
-		
-		var appointmentDuration = office.configuration.appointmentTime || 30;
-		
-		var response = {};
-		response.lower = now;
-		response.upper = forwardSevenDays;
-		
-		response.hours = [];
-		appointmentHours = [];
-		Agenda.find({ doctor : doctor._id, office : office._id, date: { $gte: now }, date: { $lte: forwardSevenDays } }, "date", function(err, dates){
-			for (var int = 0; int < dates.length; int++) {
-				var date = dates[int];
-				appointmentHours.push(moment(date.date).date(now.date()).toDate());			
-			}
-			var firstAppointmentHour = now.clone().startOf("day").hour(startAt.split(":")[0]).minutes(startAt.split(":")[1]);
-			var lastAppointmentHour = now.clone().startOf("day").hour(stopAt.split(":")[0]).minutes(stopAt.split(":")[1]);
-			while (firstAppointmentHour <= lastAppointmentHour) {
-				appointmentHours.push(firstAppointmentHour.clone().toDate());
-				firstAppointmentHour.add(appointmentDuration, "minutes");
-			}
-			appointmentHours.sort();
-			response.hours = transformToMoment(eliminateDuplicates(appointmentHours));
-			
-			response.appointments = [];
-			var query = Agenda.find()
-			.where('doctor').equals(doctor._id)
-			.where('office').equals(office._id)
-			.where('date').gte(now).lte(forwardSevenDays)
-			.sort('date')
-			.exec(function (err, agenda) {
-				if (err) return handleError(err);
-				response.appointments = agenda;
-				res.send(response);
-				res.end();
-			});
-		});
-	});
+function buildAgenda(doctor, office, paramLower, paramUpper, callback){
+    var now = (paramLower == null ? moment(new Date()) : moment(paramLower)).startOf("day");
+    var forwardSevenDays = now.clone().add(6 , "days").endOf("day");
+    if(!office.configuration) office.configuration = schemas.Configurations;
+    var startAt = office.configuration.firstAppointmentHour || "09:00";
+    var stopAt = office.configuration.lastAppointmentHour || "17:00";
+
+    var appointmentDuration = office.configuration.appointmentTime || 30;
+
+    var response = {};
+    response.lower = now;
+    response.upper = forwardSevenDays;
+
+    response.hours = [];
+    var appointmentHours = [];
+    Agenda.find({ doctor : doctor._id, office : office._id, date: { $gte: now }, date: { $lte: forwardSevenDays } }, "date", function(err, dates){
+        for (var int = 0; int < dates.length; int++) {
+            var date = dates[int];
+            appointmentHours.push(moment(date.date).date(now.date()).toDate());
+        }
+        var firstAppointmentHour = now.clone().startOf("day").hour(startAt.split(":")[0]).minutes(startAt.split(":")[1]);
+        var lastAppointmentHour = now.clone().startOf("day").hour(stopAt.split(":")[0]).minutes(stopAt.split(":")[1]);
+        while (firstAppointmentHour <= lastAppointmentHour) {
+            appointmentHours.push(firstAppointmentHour.clone().toDate());
+            firstAppointmentHour.add(appointmentDuration, "minutes");
+        }
+        appointmentHours.sort();
+        response.hours = transformToMoment(eliminateDuplicates(appointmentHours));
+
+        response.appointments = [];
+        var query = Agenda.find()
+        .where('doctor').equals(doctor._id)
+        .where('office').equals(office._id)
+        .where('date').gte(now).lte(forwardSevenDays)
+        .sort('date')
+        .exec(function (err, agenda) {
+            response.appointments = agenda;
+            callback(err, response)
+        });
+    });
 };
 
 function eliminateDuplicates(arr) {
@@ -194,16 +202,16 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation', function(req, res)
 });
 
 function smtpProvider(doctor){
-	var smtpTransport = nodemailer.createTransport({
-		service: "Gmail",
-		port: 465,
-		secure : true,
+	var smtpTransport = nodemailer.createTransport(smtpTransport({
+        host: 'localhost',
+		port: 25,
+		secure : false,
 		debug: true,
 		auth: {
-			user: doctor.contacts.email,
-			pass: new Buffer(doctor.contacts.emailPassword, 'base64').toString('ascii')
+			user: "agende@agende.med.br",
+			pass: "maiden"
 		}
-	});
+	}));
 	return smtpTransport;
 };
 

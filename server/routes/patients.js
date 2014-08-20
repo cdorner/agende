@@ -1,24 +1,28 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var async = require('async');
 var router = express.Router();
 
 var schemas = require('./agendaSchema');
 var Patients = schemas.Patients;
 
 router.get('/', function(req, res) {
-	var name = req.param("name");
 	var filter = {};
-	if (name)
-		filter.name = new RegExp(name, 'i');
+	if (req.param("name"))
+		filter.name = new RegExp(req.param("name"), 'i');
 	;
-	var query = Patients.find(filter)//
-	.sort("name").exec(function(err, patients) {
-		if (err)
-			return handleError(err);
-		res.send(patients);
-		res.end();
-	});
+    filtered(filter, function(err, patients){
+            res.send(patients);
+            res.end();
+        }
+    );
 });
+
+function filtered(filter, f){
+    Patients.find(filter).sort("name").exec(function(err, patients){
+        f(err, patients);
+    });
+};
 
 router.post('/', function(req, res) {
 	var json = req.body;

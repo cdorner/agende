@@ -1,2 +1,4 @@
 server/node_modules
 npm-debug.log
+.idea/
+.tern-project

@@ -26,13 +26,9 @@ router.post("/offices", function(req, res) {
 
 router.put('/offices/:id', function(req, res) {
 	var json = req.body;
-	Offices.findById(json.office._id, function(err, office) {
-		if (err || office == null)
-			return handleError(err);
-		office.configuration = json.office.configuration;
-		office.save(function() {
-			res.end();
-		});
+    //console.info(json);
+	Offices.findByIdAndUpdate(json.office._id, json.office, {}, function(err, office) {
+        res.end();
 	});
 });
 

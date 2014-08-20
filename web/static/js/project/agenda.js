@@ -48,7 +48,7 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", functi
 	};
 	
 	$scope.$watch('doctor', function(newDoctor, oldDoctor){
-    	if(newDoctor._id != undefined){
+    	if(newDoctor && newDoctor._id != undefined){
     		$scope.agenda = null;
     		$scope.initOffices(newDoctor);
     	}

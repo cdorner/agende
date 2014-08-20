@@ -33,7 +33,9 @@
     "mongoose" : "3.8.x",
     "moment" : "2.8.1",
     "node-uuid" : "1.4.1",
-    "nodemailer" : "1.1.1"
+    "nodemailer" : "1.1.1",
+    "nodemailer-smtp-transport" : "0.1.12",
+    "async" : "0.9.0"
   },
   "main": "app.js"
 }

@@ -19,6 +19,9 @@
 					<button id="btn-edit" ng-click="openEdit(patient)" class="btn btn-primary">Editar</button>
 				</td>
 			</tr>
+			<tr ng-show="patients.length == 0" class="text-center">
+				<td colspan="5">Nenhum paciente encontrado</td>
+			</tr>
 		</tbody>
 	</table>
 </div>
