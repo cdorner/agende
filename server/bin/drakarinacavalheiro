@@ -8,6 +8,10 @@ process.env.CURRENT_DOMAIN="http://drakarina.med.br";
 process.env.MAIL_USER="sistema.agende.med@gmail.com";
 process.env.MAIL_PASWORD="maiden0704";
 
+process.env.SMS_HOST="http://173.44.33.18/painel/api.ashx"
+process.env.SMS_USER="agende.med"
+process.env.SMS_PASSWORD="yp7o9NTe6iOR"
+
 app.set('port', 3001);
 schemas.set('db', 'mongodb://localhost/drakarinacavalheiro');
 schemas.set('debug', process.env.npm_package_config_dbdebug || false);

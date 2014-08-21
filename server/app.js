@@ -46,7 +46,7 @@ var securePaths = ["/agenda/", "/agenda/*", "/users", "/users/*", "/configuratio
                    "/doctors", "/doctors/*", "/patients", "/patients/*"];
 while (securePaths.length != 0) {
     var path = securePaths.pop();
-   // app.all(path, requireAuthentication);
+    app.all(path, requireAuthentication);
 }
 
 app.use('/', routes);
