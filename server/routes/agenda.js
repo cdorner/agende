@@ -3,7 +3,9 @@ var moment = require("moment");
 var uuid = require('node-uuid');
 var util = require('util');
 var async = require('async');
+var request = require("request")
 var nodemailer = require("nodemailer");
+var smtpTransport = require('nodemailer-smtp-transport');
 var router = express.Router();
 var schemas = require('./agendaSchema');
 var Agenda = schemas.Agenda;
@@ -104,34 +106,12 @@ function transformToMoment(arr){
 }
 
 router.delete('/doctor/:id/appointment/:appId', function(req, res){
+    console.info("ok");
 	var id = req.param('id');
 	var appId = req.param('appId');
 	Agenda.findByIdAndRemove(appId, function(err){
 		if (err) return handleError(err);
 		res.end();
-	});
-});
-
-router.get('/doctor/:id/appointment/:appId/confirmation/:token', function(req, res){
-	var appId = req.param('appId');
-	var token = req.param("token");
-	console.info(token);
-	var status = req.param("status");
-	Agenda.findById(appId, function(err, appointment){
-		if(token == appointment.confirmationToken){
-			var conditions = { _id: appId }
-				, update = { status: status}
-			;
-			Agenda.update(conditions, update, {}, function(err){
-				if (err) return handleError(err);
-				res.send("Consulta "+status+" com sucesso.");
-				res.end();
-			});
-		} else {
-			res.statusCode = 404;
-			res.send("Desculpe não foi encontrada sua consulta.");
-			res.end();
-		}
 	});
 });
 
@@ -155,64 +135,147 @@ function changeAppointmentStatus(req, res, status){
 	});
 };
 
-router.post('/doctor/:id/appointment/:appId/askconfirmation', function(req, res){
+router.post('/doctor/:id/appointment/:appId/askconfirmation/sms', function(req, res){
+    var id = req.param('id');
+    var appId = req.param('appId');
+    var token = uuid.v1();
+
+    async.waterfall([
+        function updateToken(callback){
+            Agenda.findByIdAndUpdate(appId, { $set : {confirmationToken: token}}, {}, function(err, appointment){
+                callback(err, appointment);
+            });
+        },
+        function validatePatientCellphone(appointment, callback){
+            Patients.findById(appointment.patient.id, function(err, patient) {
+                if(err) callback(err);
+                if (!patient.contacts.cell) {
+                    callback({status : 404, message : util.format("O paciente %s não tem nenhum celular configurado.", patient.name)});
+                }
+                callback(err, appointment, patient);
+            });
+        },
+        function findDoctor(appointment, patient, callback){
+            Doctors.findById(appointment.doctor, function(err, doctor) {
+                if(err) callback(err);
+                callback(err, appointment, patient, doctor)
+            });
+        },
+        function shorterConfirmationURL(appointment, patient, doctor, callback){
+            request({
+                uri: "https://www.googleapis.com/urlshortener/v1/url",
+                method: "POST",
+                json: true,
+                body: { longUrl: util.format(process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Confirmado", appointment._id, token) }
+            }, function(error, response, body) {
+                console.info(body);
+                callback(error, appointment, patient, doctor, body.id);
+            });
+        },
+        function shorterCancelationURL(appointment, patient, doctor, confirmation, callback){
+            request({
+                uri: "https://www.googleapis.com/urlshortener/v1/url",
+                method: "POST",
+                json: true,
+                body: { longUrl: util.format(process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Cancelado", appointment._id, token) }
+            }, function(error, response, body) {
+                callback(error, appointment, patient, doctor, confirmation, body.id);
+            });
+        },
+        function parse(appointment, patient, doctor, confirmation, cancelation, callback){
+            var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:m");
+            var message = "Consulta com %s %s as %s, confirmar %s, cancelar %s";
+            var parsedMessage = util.format(message, doctor.sex, doctor.smsName, appointmentDateTime, confirmation, cancelation);
+            callback(null, parsedMessage, patient.contacts.cell);
+        },
+        function sendSMS(message, cell, callback){
+            request({
+                uri: process.env.SMS_HOST,
+                method: "POST",
+                form: { action: "sendsms", lgn: process.env.SMS_USER, pwd: process.env.SMS_PASSWORD, msg : message, numbers : cell }
+            }, function(error, response, body) {
+                if(error){
+                    callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."});
+                }else{
+                    callback(null, "Solicitaçao de confirmaçao enviada.");
+                }
+            });
+        }
+    ], function end(err, message){
+        if(err){
+            res.statusCode = err.status;
+            res.send(err.message);
+        }else{
+            res.send(message);
+        }
+        res.end();
+    });
+});
+
+
+router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req, res){
 	var id = req.param('id');
 	var appId = req.param('appId');
 	var token = uuid.v1();
-	var conditions = { _id: appId }
-		, update = { confirmationToken: token}
-	;
-	Agenda.update(conditions, update, {}, function(err){
-		if (err) return handleError(err);
-		Agenda.findById(appId, function(err, appointment){
-			Patients.findById(appointment.patient.id, function(err, patient){
-				if(!patient.contacts.email){
-					res.statusCode = 404;
-					res.send(util.format("O paciente %s não tem nenhum email configurado.", patient.name));
-					return res.end();
-				}
-				Doctors.findById(id, function(err, doctor){
-					if(!doctor.contacts.email || !doctor.contacts.emailPassword){
-						res.statusCode = 404;
-						res.send(util.format("Configure o email e senha do %s %s.", doctor.sex, doctor.name));
-						return res.end();
-					}
-					var smtpTransport = smtpProvider(doctor);
-					var message = "Oi %s, você tem uma consulta com o %s %s às %s, o que você deseja fazer? " +
-					" <a href='http://appointments-web.dornersystems.com.br/api/agenda/doctor/%s/appointment/%s/confirmation/%s?status=Confirmado'>Confirmar</a> ou " +
-					" <a href='http://appointments-web.dornersystems.com.br/api/agenda/doctor/%s/appointment/%s/confirmation/%s?status=Cancelado'>Cancelar</a> ";
-					var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:m");
-					smtpTransport.sendMail({
-						from: doctor.sex + doctor.name + "<"+doctor.contacts.email+">",
-						to: patient.name + "<"+patient.contacts.email+">",
-						subject: util.format("Confirmação de consulta com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime),
-						html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, id, appId, token, id, appId, token)
-					}, function(error, response){
-						if(error){
-							console.log("Message error: " + error);
-							res.statusCode = 500;
-							res.send("Houve algum erro ao enviar o email, verifique se a senha está correta.");
-						}
-						res.end();
-					});
-				});
-			});
-		});
-	});
+
+    async.waterfall([
+        function updateToken(callback){
+            Agenda.findByIdAndUpdate(appId, { $set : {confirmationToken: token}}, {}, function(err, appointment){
+                callback(err, appointment);
+            });
+        },
+        function validatePatientEmail(appointment, callback){
+            Patients.findById(appointment.patient.id, function(err, patient) {
+                if(err) callback(err);
+                if (!patient.contacts.email) {
+                    callback({status : 404, message : util.format("O paciente %s não tem nenhum email configurado.", patient.name)}, appointment);
+                }
+                callback(err, appointment, patient);
+            });
+        },
+        function findDoctor(appointment, patient, callback){
+            Doctors.findById(appointment.doctor, function(err, doctor) {
+                if(err) callback(err);
+                callback(err, appointment, patient, doctor)
+            });
+        },
+        function sendEmail(appointment, patient, doctor, callback){
+            var smtpTransport = smtpProvider();
+            var message = "Oi %s, você tem uma consulta com o %s %s às %s, o que você deseja fazer? " +
+                "<a href='"+process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Confirmado'>Confirmar</a> ou " +
+                "<a href='"+process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Cancelado'>Cancelar</a> ";
+            var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:m");
+            smtpTransport.sendMail({
+                from: doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">",
+                to: patient.name + "<"+patient.contacts.email+">",
+                subject: util.format("Confirmação de consulta com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime),
+                html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, appointment._id, token, appointment._id, token)
+            }, function(error, response){
+                if(error){
+                    callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."})
+                }
+                callback(null, "Solicitaçao de confirmaçao enviada.");
+            });
+        }
+    ], function end(err, message){
+        if(err){
+            res.statusCode = err.status;
+            res.send(err.message);
+        }else{
+            res.send(message);
+        }
+        res.end();
+    });
 });
 
-function smtpProvider(doctor){
-	var smtpTransport = nodemailer.createTransport(smtpTransport({
-        host: 'localhost',
-		port: 25,
-		secure : false,
-		debug: true,
-		auth: {
-			user: "agende@agende.med.br",
-			pass: "maiden"
-		}
-	}));
-	return smtpTransport;
+function smtpProvider(){
+    return nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASWORD
+        }
+    });
 };
 
 router.post('/doctor/:doctor/office/:office/appointments', function(req, res){
@@ -249,7 +312,7 @@ function sendScheduleSuccessNotification(appointment){
 				var message = "Oi %s, você tem uma consulta agendada com o %s %s às %s.";
 				var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:m");
 				smtpTransport.sendMail({
-					from: doctor.sex + doctor.name + "<"+doctor.contacts.email+">",
+                    from: doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">",
 					to: patient.name + "<"+patient.contacts.email+">",
 					subject: util.format("Consulta agendada com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime),
 					html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime)

@@ -1,5 +1,6 @@
 <html ng-app="main">
 <head>
+<title ng-controller="TitleController">{{title}}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -14,13 +15,13 @@
 
 <script type="text/javascript" src="/static/js/project/message.js"></script>
 <script type="text/javascript" src="/static/js/project/main.js"></script>
+<script type="text/javascript" src="/static/js/project/title.js"></script>
 <script type="text/javascript" src="/static/js/project/agenda.js"></script>
 <script type="text/javascript" src="/static/js/project/configurations.js"></script>
 <script type="text/javascript" src="/static/js/project/patients.js"></script>
 
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.css.map">
 <link rel="stylesheet" href="/bower_components/angucomplete-alt/angucomplete-alt.css">
 
 <style type="text/css">
@@ -54,6 +55,14 @@ form input.ng-valid.ng-dirty {
 .bg-notworkday{
 	background-color: #fcf8e3;
 }
+
+.auto-complete-patient {
+    width: 500px !important;
+}
+
+.panel-heading small{
+    color: #ffffff;
+}
 </style>
 </head>
 <body ng-controller="MainController">
@@ -64,18 +73,20 @@ form input.ng-valid.ng-dirty {
         <span></span>
     </div>
 	<div class="container-fluid">
-		<nav class="navbar navbar-default" role="navigation">
-			<div ng-include="'menu.html'"></div>
-			<div class="panel panel-info">
-				<!-- Default panel contents -->
-				<div class="panel-heading">
-					{{title}}
-				</div>
-				<div class="panel-body">
-					<div ng-view></div>
-				</div>
-			</div>
-		</nav>
+        <div class="panel panel-primary">
+            <div class="panel-heading"><h3>Agende.med <small>Agendamento da forma correta</small></h3></div>
+            <div class="panel-body">
+                <nav class="navbar navbar-default" role="navigation">
+                    <div ng-include="'menu.html'"></div>
+                    <div class="panel panel-info">
+                        <!-- Default panel contents -->
+                        <div class="panel-body">
+                            <div ng-view></div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
 	</div>
 </body>
 <script type="text/javascript">

@@ -50,13 +50,13 @@
 				<h4 class="modal-title">Consulta às {{appointment.date | date:format="dd/MM/yyyy h:mm"}}</h4>
 			</div>
 			<div class="modal-body">
-				<form name="form" novalidate class="simple-form form-inline" role="form">
+				<form name="form" novalidate class="simple-form form-horizontal" role="form">
 					<input type="hidden" ng-model="appointment.id"></input> 
 					<input type="hidden" ng-model="appointment.date"></input> 
 					<div class="form-group">
 						<label class="" for="patient">Paciente</label>
 						<angucomplete-alt id="patient" pause="400" selected-object="setPatient"
-				              remote-url="/api/patients?name="
+				              remote-url="/api/patients?name=" input-class="form-control auto-complete-patient"
 				              title-field="name" field-required="true" match-class="highlight"
 				              text-searching="Buscando paciente..." text-no-results="Nenhum resultado encontrado"
 				              input-class="form-control form-control-small" ng-hide="appointment.id">
@@ -76,7 +76,8 @@
 				<button type="button" class="btn btn-default" ng-click="editPatient()">Editar</button>
 				<button id="btn-cancel-appointment" ng-click="cancelAppointment()" class="btn btn-danger" data-dismiss="clickover">Cancelar</button>
 				<button id="btn-absent-appointment" ng-click="absentAppointment()" class="btn btn-warning" data-dismiss="clickover">Faltou</button>
-				<button id="btn-as-confirmation" ng-click="askConfirmation()" class="btn btn-primary" data-dismiss="clickover">Solicitar confirmação</button>
+				<button id="btn-confirmation-email" ng-click="askConfirmationByEmail()" class="btn btn-primary" data-dismiss="clickover">Confirmação por email</button>
+                <button id="btn-confirmation-sms" ng-click="askConfirmationBySMS()" class="btn btn-primary" data-dismiss="clickover">Confirmação por sms</button>
 				<button id="btn-confirm-appointment" ng-click="confirmAppointment()" class="btn btn-success" data-dismiss="clickover">Confirmar</button>
 			</div>
 			<div class="modal-footer" ng-hide="appointment.id">

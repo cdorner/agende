@@ -7,7 +7,6 @@ var Doctors = schemas.Doctors;
 
 router.get('/', function(req, res) {
 	var query = Doctors.find()//
-	.select('-contacts.emailPassword')
 	.sort("name")
 	.exec(function(err, doctors) {
 		if (err)
@@ -41,11 +40,11 @@ router.put('/:id', function(req, res) {
 		doctor.name = json.name;
 		doctor.specialty = json.specialty;
 		doctor.sex = json.sex;
+        doctor.smsName = json.smsName;
 		doctor.contacts = {
 			phone : json.contacts.phone,
 			cell : json.contacts.cell,
-			email : json.contacts.email,
-			emailPassword : json.contacts.emailPassword ? new Buffer(json.contacts.emailPassword).toString('base64') : doctor.contacts.emailPassword
+			email : json.contacts.email
 		};
 		doctor.save(function(){
 			res.end();

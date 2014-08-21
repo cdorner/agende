@@ -25,7 +25,6 @@ router.get('/login', function(req, res) {
 
 router.post('/login', function(req, res) {
 	var login = req.body;
-	console.info(login);
 	Users.findOne({username : login.username, password : login.password}, function(err, user){
 		console.info(user);
 			if(user){

@@ -45,6 +45,7 @@ var Configurations = {
 
 var DoctorSchema = new Schema({
 	name : String,
+    smsName : String,
 	specialty : String,
 	contacts : {},
 	sex : String

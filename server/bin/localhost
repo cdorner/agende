@@ -4,8 +4,16 @@ var app = require('../app');
 
 var schemas = require('../routes/agendaSchema');
 
-app.set('port', process.env.npm_package_config_port || 8888);
-schemas.set('db', process.env.npm_package_config_db || 'mongodb://localhost/agende');
+process.env.CURRENT_DOMAIN="http://agende";
+process.env.MAIL_USER="christian.dorner@gmail.com";
+process.env.MAIL_PASWORD="maiden0109";
+
+process.env.SMS_HOST="http://173.44.33.18/painel/api.ashx"
+process.env.SMS_USER="agende.med"
+process.env.SMS_PASSWORD="yp7o9NTe6iOR"
+
+app.set('port', 3000);
+schemas.set('db', 'mongodb://localhost/agende');
 schemas.set('debug', process.env.npm_package_config_dbdebug || false);
 schemas.init();
 

@@ -64,6 +64,10 @@
 						window.location.href = "/home.html";
 					})
 					.error(function(data, status, headers, config) {
+                        if(status >= 500){
+                            $scope.message = "Desculpe o sistema nao esta acessivel no momento";
+                            return;
+                        }
 						$scope.message = data;
 					})
 				};

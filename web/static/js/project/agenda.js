@@ -252,18 +252,29 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", functi
 		});
 	};
 	
-	$scope.askConfirmation = function(){
-		$http.post("/api/agenda/doctor/"+$scope.doctor._id+"/appointment/"+$scope.appointment.id+"/askconfirmation")
+	$scope.askConfirmationByEmail = function(){
+		$http.post("/api/agenda/doctor/"+$scope.doctor._id+"/appointment/"+$scope.appointment.id+"/askconfirmation/mail")
 			.success(function(){
 				Message.show("Pedido de confirmação enviado para "+$scope.appointment.patient.name+".");
 				$("#add").modal("hide");
 				$scope.searchAgenda($scope.doctor, $scope.office);
 			})
 			.error(function(data, status, headers, config) {
-				console.info("hey");
 				Message.error(data);
 			})
 	};
+
+    $scope.askConfirmationBySMS = function(){
+        $http.post("/api/agenda/doctor/"+$scope.doctor._id+"/appointment/"+$scope.appointment.id+"/askconfirmation/sms")
+            .success(function(){
+                Message.show("Pedido de confirmação enviado para "+$scope.appointment.patient.name+".");
+                $("#add").modal("hide");
+                $scope.searchAgenda($scope.doctor, $scope.office);
+            })
+            .error(function(data, status, headers, config) {
+                Message.error(data);
+            })
+    };
 	
 	$scope.Init();
 }]);

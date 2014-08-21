@@ -80,6 +80,11 @@
 						<input type="text" class="form-control" id="doctor" placeholder="Nome do médico"
 							ng-model="newDoctor.name"></input>
 					</div>
+                    <div class="form-group">
+                        <label for="sms">Nome para SMS*</label>
+                        <input type="text" class="form-control" id="doctor" placeholder="Nome do médico no SMS, máximo 10 caracteres."
+                               ng-model="newDoctor.smsName" max="10" maxlength="10"></input>
+                    </div>
 					<div class="form-group">
 						<label for="specialty">Especialidade </label>
 						<input type="text" class="form-control" id="specialty" placeholder="Especialidade"
@@ -94,17 +99,11 @@
 						<label for="cell">Celular</label>
 						<input type="tel" class="form-control" id="cell" placeholder="Celular"
 							ng-model="newDoctor.contacts.cell"></input>
-					
 					</div>
 					<div class="form-group">
 						<label for="email">Email</label>
 						<input type="email" class="form-control" id="email" placeholder="Email"
 							ng-model="newDoctor.contacts.email"></input>
-					</div>
-					<div class="form-group">
-						<label for="password">Senha</label>
-						<input type="password" class="form-control" id="password" placeholder="Senha do email"
-							ng-model="newDoctor.contacts.emailPassword"></input>
 					</div>
 				</form>
 			</div>
@@ -139,7 +138,7 @@
 							ng-model="office.address"></input>
 					</div>
 					<div class="form-group">
-						<label for="tel">Telefone </label>
+						<label for="phone">Telefone </label>
 						<input type="tel" class="form-control" id="phone" placeholder="Telefone"
 							ng-model="office.contacts.phone"></input>
 					</div>

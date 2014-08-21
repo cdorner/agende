@@ -4,6 +4,10 @@ var app = require('../app');
 
 var schemas = require('../routes/agendaSchema');
 
+process.env.CURRENT_DOMAIN="http://draandressa.med.br";
+process.env.MAIL_USER="sistema.agende.med@gmail.com";
+process.env.MAIL_PASWORD="maiden0704";
+
 app.set('port', 3000);
 schemas.set('db', 'mongodb://localhost/draandressadorner');
 schemas.set('debug', process.env.npm_package_config_dbdebug || false);
