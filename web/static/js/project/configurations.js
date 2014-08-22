@@ -31,13 +31,18 @@ var configurations = angular.module("configurations", ['ngRoute'])
 	    	if($scope.doctor){
 	    		$http.get('/api/doctors/'+$scope.doctor._id+"/offices", {params : {doctor : $scope.doctor._id}})
 				.success(function(data){
+                    angular.forEach(data, function(value, key){
+                        value.configuration.firstAppointmentHour = moment(value.configuration.firstAppointmentHour).toDate();
+                        value.configuration.lastAppointmentHour = moment(value.configuration.lastAppointmentHour).toDate();
+                    });
 					$scope.offices = data;
 				});
 	    	}
 	    };
 	    
 	    $scope.$watch('doctor', function(newDoctor, oldDoctor){
-	    	if(newDoctor._id != undefined)
+            $scope.office = {};
+	    	if(newDoctor && newDoctor._id != undefined)
 	    		$scope.change(newDoctor);
 	    }, true);
 	    

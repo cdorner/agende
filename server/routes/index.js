@@ -26,15 +26,14 @@ router.get('/login', function(req, res) {
 router.post('/login', function(req, res) {
 	var login = req.body;
 	Users.findOne({username : login.username, password : login.password}, function(err, user){
-		console.info(user);
-			if(user){
-				res.send({user : user._id, logged : true});
-				return res.end();
-			}
-			res.statusCode = 404;
-			res.send("Usuário ou senha inválidos.");
-			res.end();
-		});
+        if(user){
+            res.send({user : user._id, logged : true});
+            return res.end();
+        }
+        res.statusCode = 404;
+        res.send("Usuário ou senha inválidos.");
+        res.end();
+    });
 });
 
 module.exports = router;
