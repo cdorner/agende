@@ -1,4 +1,4 @@
-var agenda = angular.module("agenda", ["angucomplete-alt"]).
+var agenda = angular.module("agenda", ["angucomplete-alt", "ui.bootstrap"]).
 controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", function($scope, $http, $timeout, $filter){
 	this.self = this;
 	
@@ -275,6 +275,13 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", functi
                 Message.error(data);
             })
     };
-	
+
+    $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+    };
+
 	$scope.Init();
 }]);

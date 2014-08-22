@@ -38,39 +38,50 @@
 			<div class="modal-body">
 				<form name="formPatient" novalidate class="simple-form form-horizontal" role="form">
 					<div class="form-group">
-						<label for="patient">Nome *</label>
-						<input type="text" class="form-control" id="patient" placeholder="Nome do paciente"
-							ng-model="patient.name" required ></input>
+                        <div class="col-md-10">
+                            <label for="patient">Nome *</label>
+                            <input type="text" class="form-control" id="patient" placeholder="Nome do paciente"
+                                ng-model="patient.name" required ></input>
+                        </div>
 					</div>
 					<div class="form-group">
-						<label for="email">Email</label>
-						<input type="email" class="form-control" id="email" placeholder="Email"
-							ng-model="patient.contacts.email"></input>
+                        <div class="col-md-10">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Email"
+                                ng-model="patient.contacts.email"></input>
+                        </div>
 					</div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="birth">Nascimento dd/mm/yyyy *</label>
+                            <p class="input-group">
+                                <input id="birth" type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="patient.birth" is-open="opened"
+                                       ng-required="true" close-text="Close" placeholder="Nascimento"></input>
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
 					<div class="form-group">
-						<div class="col-sm-4">
-							<label for="birth">Nascimento *</label>
-							<input type="date" class="form-control" id="birth" placeholder="Nascimento"
-								ng-model="patient.birth" required ></input>
-						</div>
 						<div class="col-sm-4">
 							<label for="phone">Telefone *</label>
 							<input type="tel" class="form-control" id="phone" placeholder="Telefone"
 								ng-model="patient.contacts.phone" required ></input>
 						</div>
 						<div class="col-sm-4">
-							<label for="cell">Celular</label>
+							<label for="cell">Celular (com DDD)</label>
 							<input type="tel" class="form-control" id="cell" placeholder="Celular"
 								ng-model="patient.contacts.cell"></input>
 						</div>
 					</div>
 					<div class="form-group">
-						<div>
+                        <div class="col-md-10">
 							<label for="convenio">Convênio</label>
 							<input type="text" class="form-control" id="convenio" placeholder="Convênio"
 								ng-model="patient.healthCare.name" ></input>
 						</div>
-						<div>
+                        <div class="col-md-10">
 							<label for="convenio">Nr. Carteirinha</label>
 							<input type="text" class="form-control" id="convenio" placeholder="Carteirinha"
 								ng-model="patient.healthCare.number" ></input>

@@ -1,4 +1,4 @@
-var configurations = angular.module("patients", ['ngRoute'])
+var configurations = angular.module("patients", ['ngRoute', 'ui.bootstrap'])
 
 	.controller('PatientController', function($scope, $route, $routeParams, $location, $http, $timeout) {
 	    $scope.$route = $route;
@@ -29,7 +29,14 @@ var configurations = angular.module("patients", ['ngRoute'])
 	    $scope.dismiss = function(){
 	    	$scope.patient = null;
 	    };
-	    
+
+        $scope.open = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            $scope.opened = true;
+        };
+
 	    $scope.Init();
 	})
 ;
