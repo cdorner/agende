@@ -6,6 +6,11 @@ var main = angular.module("main", ['ngRoute', 'agendeTitle', 'agenda', 'configur
 	    $scope.$routeParams = $routeParams;
 	    $scope.menu = "agenda";
 
+        $scope.$on('ChangeTitle', function(event, title, menu) {
+            $scope.title = title;
+            $scope.menu = menu;
+        });
+
 	    if(!$cookieStore.get("userId")){
 	    	window.location.href = "/login.html";
 	    }
@@ -19,14 +24,6 @@ var main = angular.module("main", ['ngRoute', 'agendeTitle', 'agenda', 'configur
 	    	window.location.href = "/";
 	    }
 	}])
-    .controller("TitleController", function($scope, $title){
-        $scope.$on('ChangeTitle', function(event, title, menu) {
-            $title.setTitle(title);
-            $scope.title = $title.get();
-            $scope.menu = menu;
-        });
-    })
-
     .factory('ServerNotAvailable',['$q','$location',function($q,$location){
         return {
             "responseError": function(rejection){

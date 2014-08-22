@@ -4,7 +4,7 @@ var app = require('../app');
 
 var schemas = require('../routes/agendaSchema');
 
-process.env.CURRENT_DOMAIN="http://drakarina.med.br";
+process.env.CURRENT_DOMAIN="http://drakarina.agende.med.br";
 process.env.MAIL_USER="sistema.agende.med@gmail.com";
 process.env.MAIL_PASWORD="maiden0704";
 
