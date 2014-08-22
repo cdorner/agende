@@ -44,8 +44,8 @@ function buildAgenda(doctor, office, paramLower, paramUpper, callback){
     var now = (paramLower == null ? moment(new Date()) : moment(paramLower)).startOf("day");
     var forwardSevenDays = now.clone().add(6 , "days").endOf("day");
     if(!office.configuration) office.configuration = schemas.Configurations;
-    var startAt = office.configuration.firstAppointmentHour || "09:00";
-    var stopAt = office.configuration.lastAppointmentHour || "17:00";
+    var startAt = onlyHourAndMinutes(office.configuration.firstAppointmentHour) || "09:00";
+    var stopAt = onlyHourAndMinutes(office.configuration.lastAppointmentHour) || "17:00";
 
     var appointmentDuration = office.configuration.appointmentTime || 30;
 
@@ -81,6 +81,12 @@ function buildAgenda(doctor, office, paramLower, paramUpper, callback){
         });
     });
 };
+
+function onlyHourAndMinutes(date){
+    if(!date) return date;
+    var d = moment(date);
+    return d.hours() + ":" + d.minutes();
+}
 
 function eliminateDuplicates(arr) {
   var i,

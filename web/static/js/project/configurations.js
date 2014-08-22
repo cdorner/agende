@@ -5,6 +5,9 @@ var configurations = angular.module("configurations", ['ngRoute'])
 	    $scope.$location = $location;
 	    $scope.$routeParams = $routeParams;
 	    $scope.$emit('ChangeTitle', "Configuração do sistema", "configurations");
+
+        $scope.hstep = 1;
+        $scope.mstep = 1;
 	    
 	    $scope.doctor = {};
 	    $scope.doctors = {};
@@ -43,6 +46,10 @@ var configurations = angular.module("configurations", ['ngRoute'])
 	    };
 	    
 	    $scope.save = function(){
+            if($scope.office.configuration.firstAppointmentHour > $scope.office.configuration.lastAppointmentHour){
+                Message.error("A primeira consulta deve ser apos a ultima consulta.");
+                return;
+            }
 	    	if(!$scope.office.configuration.weekDays) {$scope.office.configuration.weekDays = $scope.weekDays}
 	    	var request = {doctor : $scope.doctor, office : $scope.office};
 	    	$http.put("/api/doctors/"+$scope.doctor._id+"/offices/"+$scope.office._id, request)
