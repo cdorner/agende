@@ -1,16 +1,16 @@
-var configurations = angular.module("patients", ['ngRoute', 'ui.bootstrap'])
+angular.module("patients", ['ngRoute', 'ui.bootstrap'])
 
 	.controller('PatientController', function($scope, $route, $routeParams, $location, $http, $timeout) {
 	    $scope.$route = $route;
 	    $scope.$location = $location;
 	    $scope.$routeParams = $routeParams;
+        $scope.page = {currentPage : 1, itemsPerPage : 10};
+        $scope.filter = {};
+
 	    $scope.$emit('ChangeTitle', "Pacientes", "patients");
-	    
+
 	    $scope.Init = function(){
-	    	$http.get('/api/patients')
-			.success(function(data){
-				$scope.patients = data;
-			});
+            $scope.filtering();
 	    };
 	    
 	    $scope.openEdit = function(patient){
@@ -36,6 +36,22 @@ var configurations = angular.module("patients", ['ngRoute', 'ui.bootstrap'])
 
             $scope.opened = true;
         };
+
+        $scope.filtering = function() {
+            $http.get('/api/patients', {params : {name : $scope.filter.name,
+                                        currentPage : $scope.page.currentPage, itemsPerPage : $scope.page.itemsPerPage}})
+                .success(function(data){
+                    $scope.page = data.page;
+                    $scope.patients = data.patients;
+                });
+        };
+
+        $scope.$watch('filter.name', function(newName, oldName){
+            if(newName || "" === newName){
+                $scope.page.currentPage = 1;
+                $scope.filtering();
+            }
+        }, true);
 
 	    $scope.Init();
 	})
