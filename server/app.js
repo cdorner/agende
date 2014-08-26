@@ -33,7 +33,8 @@ var quote = new RegExp("\"", 'g');
 
 var requireAuthentication = function(req, res, next){
 	var userId = req.cookies.userId || "";
-	Users.findById(userId.replace(quote, ""), function(err, user){
+    req.cookies.userId = userId.replace(quote, "");
+	Users.findById(req.cookies.userId, function(err, user){
 		if(err || !user){
 			res.statusCode = 401;
 			return res.end();

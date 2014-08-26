@@ -1,5 +1,5 @@
 var agenda = angular.module("agenda", ["angucomplete-alt", "ui.bootstrap"]).
-controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", function($scope, $http, $timeout, $filter){
+controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", "$cookieStore", function($scope, $http, $timeout, $filter, $cookieStore){
 	this.self = this;
 	
 	$scope.$emit('ChangeTitle', "Agenda", "agenda");
@@ -30,14 +30,27 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", functi
 	
 	$scope.initDoctors = function(){
 		$http.get('/api/doctors')
-		.success(function(data){
-			$scope.doctors = data;
-			$scope.doctor = $scope.doctors[0];
-		});
+            .success(function(data){
+                $scope.doctors = data;
+                if($cookieStore.get("profile") == "doctor"){
+                    $(data).each(function(index, doctor){
+                        if(doctor.user == $cookieStore.get("userId")){
+                            $scope.doctor = doctor;
+                            return false;
+                        }
+                    });
+                } else{
+                    $scope.doctor = $scope.doctors[0];
+                }
+            });
 	};
 
+    $scope.isDoctorDisabled = function(){
+        return $cookieStore.get("profile") == "doctor";
+    };
+
 	$scope.initOffices = function(doctor){
-		$http.get('/api/doctors/'+doctor._id+"/offices", {params : {doctor : doctor._id}})
+		$http.get('/api/users/'+$cookieStore.get("userId")+"/offices", {params : {doctor : doctor._id}})
 		.success(function(data){
 			$scope.office = data.length > 0 ? data[0] : null;
 			$scope.offices = data;

@@ -16,7 +16,7 @@ function init(){
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function callback () {debug("DB Open");});
 	
-	var admin = new Users({_id : "53f397165415ed355303ddc9", name: "admin", username: "admin", password:"TYH46JE9"});
+	var admin = new Users({_id : "53f397165415ed355303ddc9", name: "admin", username: "admin", password:"TYH46JE9", profile : "admin"});
 	admin.save();
 };
 
@@ -48,7 +48,8 @@ var DoctorSchema = new Schema({
     smsName : String,
 	specialty : String,
 	contacts : {},
-	sex : String
+	sex : String,
+    user : String
 });
 
 var OfficeSchema = new Schema({
@@ -74,7 +75,7 @@ var Patients = mongoose.model('Patients', PatientsSchema);
 
 var TinyUrlSchema = new Schema({
 	tiny : String,
-	url : String,
+	url : String
 });
 
 var TinyUrl = mongoose.model('TinyUrl', TinyUrlSchema);
@@ -82,7 +83,9 @@ var TinyUrl = mongoose.model('TinyUrl', TinyUrlSchema);
 var UsersSchema = new Schema({
 	name : String,
 	username: String,
-	password : String
+	password : String,
+    profile : String,
+    offices : [String]
 });
 
 var Users = mongoose.model('Users', UsersSchema);

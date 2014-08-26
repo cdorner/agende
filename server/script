@@ -4,4 +4,4 @@ pm2 start bin/drakarinacavalheiro -e /var/logs/agende/draandressacavalheiro/err.
 
 
 -- new user
-curl -H "Content-Type: application/json" --insecure --silent --show-error --fail --request POST --cookie userId=53f397165415ed355303ddc9 --data '{"name": "admin", "username":"admin", "password": "123"}' http://localhost:3000/users
+curl -H "Content-Type: application/json" --insecure --silent --show-error --fail --request POST --cookie userId=53f397165415ed355303ddc9 --data '{"name": "Médico", "username":"medico", "password": "123", "profile":"doctor"}' http://localhost:3000/users

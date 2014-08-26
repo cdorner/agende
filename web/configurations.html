@@ -3,11 +3,11 @@
 		<div class="form-group">
 			<label for="doctor" class="col-sm-2 control-label">Médico</label>
 			<div class="col-sm-3">
-				<select id="doctor" ng-model="doctor" ng-options="doctor.name for doctor in doctors" class="form-control" required>
+				<select id="doctor" ng-model="doctor" ng-disabled="isDoctorDisabled()"  ng-options="doctor.name for doctor in doctors" class="form-control" required>
 					<option value="">-- Selecione --</option>
 				</select>
 			</div>
-			<button type="button" class="btn btn-primary" ng-hide="doctor._id" ng-click="openNewDoctorModal()" >Novo</button>
+			<button type="button" class="btn btn-primary" ng-show="showNewDoctorButton()" ng-click="openNewDoctorModal()">Novo</button>
 			<button type="button" class="btn btn-primary" ng-show="doctor._id" ng-click="editDoctorModal()" >Editar</button>
 		</div>
 		<div class="form-group" ng-show="doctor._id">
@@ -48,6 +48,13 @@
   					<input type="checkbox" value="{{day.day}}" ng-model="day.selected"> {{day.day}}
 				</label>
 			</div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Secretárias</label>
+                <label ng-repeat="secretary in secretaries">
+                    <input type="checkbox" value="{{secretary.id}}" ng-model="secretary.selected"> {{secretary.name}}
+                </label>
+            </div>
+
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<button type="submit" ng-click="save()" class="btn btn-default" ng-disabled="form.$invalid">Salvar</button>

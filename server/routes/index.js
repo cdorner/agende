@@ -27,7 +27,7 @@ router.post('/login', function(req, res) {
 	var login = req.body;
 	Users.findOne({username : login.username, password : login.password}, function(err, user){
         if(user){
-            res.send({user : user._id, logged : true});
+            res.send({user : user._id, profile : user.profile, logged : true});
             return res.end();
         }
         res.statusCode = 404;

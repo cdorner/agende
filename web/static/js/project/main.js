@@ -18,7 +18,17 @@ var main = angular.module("main", ['ngRoute', 'agendeTitle', 'agenda', 'configur
 	    var isActiveMenu = function(menu){
 	    	return $scope.menu = menu;
 	    };
-	    
+
+        $scope.showMenu = function(){
+            var show = false;
+            angular.forEach(arguments, function(arg){
+               if(arg == $cookieStore.get("profile")){
+                   show = true;
+               }
+            });
+            return show;
+        };
+
 	    $scope.logout = function(){
 	    	$cookieStore.remove("userId");
 	    	window.location.href = "/";

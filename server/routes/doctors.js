@@ -19,6 +19,7 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
 	var json = req.body;
 	json.configuration = schemas.Configurations;
+    json.user = req.cookies.userId;
 	var doctor = new Doctors(json);
 	doctor.save(function() {
 		res.end();

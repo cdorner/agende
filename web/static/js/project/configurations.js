@@ -1,6 +1,6 @@
 var configurations = angular.module("configurations", ['ngRoute'])
 
-	.controller('ConfigurationController', function($scope, $route, $routeParams, $location, $http, $timeout) {
+	.controller('ConfigurationController', function($scope, $route, $routeParams, $location, $http, $timeout, $cookieStore) {
 	    $scope.$route = $route;
 	    $scope.$location = $location;
 	    $scope.$routeParams = $routeParams;
@@ -21,25 +21,65 @@ var configurations = angular.module("configurations", ['ngRoute'])
 	                       {day : "Domingo", selected : false}];
 	    
 	    $scope.Init = function(){
-	    	$http.get('/api/doctors')
-			.success(function(data){
-				$scope.doctors = data;
-			});
-	    };
-	    
-	    $scope.initOffices = function(){
-	    	if($scope.doctor){
-	    		$http.get('/api/doctors/'+$scope.doctor._id+"/offices", {params : {doctor : $scope.doctor._id}})
-				.success(function(data){
-                    angular.forEach(data, function(value, key){
-                        value.configuration.firstAppointmentHour = moment(value.configuration.firstAppointmentHour).toDate();
-                        value.configuration.lastAppointmentHour = moment(value.configuration.lastAppointmentHour).toDate();
+	    	$http.get('/api/doctors').success(function(data){
+		        $scope.doctors = data;
+                if($cookieStore.get("profile") == "doctor"){
+                    $(data).each(function(index, doctor){
+                        if(doctor.user == $cookieStore.get("userId")){
+                            $scope.doctor = doctor;
+                            return false;
+                        }
                     });
-					$scope.offices = data;
-				});
-	    	}
+                }
+            });
 	    };
-	    
+
+        $scope.isDoctorDisabled = function(){
+            return $cookieStore.get("profile") == "doctor" && $scope.doctors.length > 0;
+        };
+
+        $scope.showNewDoctorButton = function(){
+            return !$scope.doctor._id || $cookieStore.get("admin");
+        };
+
+	    $scope.initOffices = function(){
+            if($scope.doctor){
+                $http.get('/api/doctors/'+$scope.doctor._id+"/offices", {params : {doctor : $scope.doctor._id}})
+                    .success(function(offices){
+                        angular.forEach(offices, function(value, key){
+                            value.configuration.appointmentTime = value.configuration.appointmentTime || 30;
+                            value.configuration.firstAppointmentHour = moment(orNineAM(value.configuration.firstAppointmentHour)).toDate();
+                            value.configuration.lastAppointmentHour = moment(orSixPM(value.configuration.lastAppointmentHour)).toDate();
+                        });
+                        $scope.offices = offices;
+                    });
+            }
+	    };
+
+        function orNineAM(date){
+            if(date) return date;
+            return moment().hours(9).minutes(0).toDate();
+        };
+
+        function orSixPM(date){
+            if(date) return date;
+            return moment().hours(18).minutes(0).toDate();
+        };
+
+        $scope.$watch('office', function(office, oldOffice){
+            if(office){
+                $http.get('/api/users/secretaries/').success(function(secretaries){
+                    $scope.secretaries = [];
+                    angular.forEach(secretaries, function(secretary){
+                        if(secretary.offices.indexOf(office._id) != -1)
+                            $scope.secretaries.push({id : secretary._id, name : secretary.name, selected: true});
+                        else
+                            $scope.secretaries.push({id : secretary._id, name : secretary.name, selected: false});
+                    });
+                });
+            }
+        });
+
 	    $scope.$watch('doctor', function(newDoctor, oldDoctor){
             $scope.office = {};
 	    	if(newDoctor && newDoctor._id != undefined)
@@ -56,7 +96,7 @@ var configurations = angular.module("configurations", ['ngRoute'])
                 return;
             }
 	    	if(!$scope.office.configuration.weekDays) {$scope.office.configuration.weekDays = $scope.weekDays}
-	    	var request = {doctor : $scope.doctor, office : $scope.office};
+	    	var request = {doctor : $scope.doctor, office : $scope.office, secretaries : $scope.secretaries};
 	    	$http.put("/api/doctors/"+$scope.doctor._id+"/offices/"+$scope.office._id, request)
 				.success(function(){
 					Message.show("Informações do consultório "+$scope.doctor.name+" alteradas.");
