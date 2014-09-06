@@ -36,7 +36,8 @@
       "nodemailer" : "1.1.1",
       "nodemailer-smtp-transport" : "0.1.12",
       "request" : "2.40.0",
-      "static-favicon": "~1.0.0"
+      "static-favicon": "~1.0.0",
+      "password-hash": "1.2.2"
   },
   "main": "app.js"
 }

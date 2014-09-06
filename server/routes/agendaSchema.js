@@ -82,8 +82,8 @@ var TinyUrl = mongoose.model('TinyUrl', TinyUrlSchema);
 
 var UsersSchema = new Schema({
 	name : String,
-	username: String,
-	password : String,
+	username: {type : String, index: { unique: true }},
+	password : {type : String, select: false},
     profile : String,
     offices : [String]
 });

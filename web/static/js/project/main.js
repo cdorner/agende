@@ -1,6 +1,6 @@
 var main = angular.module("main", ['ngRoute', 'agendeTitle', 'agenda', 'configurations', "patients", "ngCookies"])
 
-	.controller('MainController', ["$scope", "$route", "$routeParams", "$location", "$cookieStore", "$title", function($scope, $route, $routeParams, $location, $cookieStore, $title) {
+	.controller('MainController', ["$scope", "$route", "$routeParams", "$location", "$cookieStore", "$title", "$http", function($scope, $route, $routeParams, $location, $cookieStore, $title, $http) {
 	    $scope.$route = $route;
 	    $scope.$location = $location;
 	    $scope.$routeParams = $routeParams;
@@ -19,6 +19,13 @@ var main = angular.module("main", ['ngRoute', 'agendeTitle', 'agenda', 'configur
 	    	return $scope.menu = menu;
 	    };
 
+        $scope.initUser = function(){
+            var userId = $cookieStore.get("userId")
+            $http.get('/api/users/'+userId).success(function(user){
+                $scope.user = user;
+            });
+        };
+
         $scope.showMenu = function(){
             var show = false;
             angular.forEach(arguments, function(arg){
@@ -32,7 +39,31 @@ var main = angular.module("main", ['ngRoute', 'agendeTitle', 'agenda', 'configur
 	    $scope.logout = function(){
 	    	$cookieStore.remove("userId");
 	    	window.location.href = "/";
-	    }
+	    };
+
+        $scope.userProfile = function(){
+            $("#modal-user-profile").show();
+        };
+
+        $scope.dismissUser = function(){
+            $("#modal-user-profile").hide();
+        };
+
+        $scope.updateUser = function(){
+            var userId = $cookieStore.get("userId");
+            $http.put('/api/users/'+userId, $scope.user)
+                .success(function(user){
+                    $scope.user = user;
+                    Message.show("Alteraçao realizada com sucesso.");
+                    $("#modal-user-profile").hide();
+                })
+                .error(function(data, status, headers, config){
+                    Message.error(data);
+                });
+        };
+
+
+        $scope.initUser();
 	}])
     .factory('ServerNotAvailable',['$q','$location',function($q,$location){
         return {

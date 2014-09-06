@@ -14,6 +14,7 @@ var doctors = require('./routes/doctors');
 var patients = require('./routes/patients');
 var offices = require('./routes/offices');
 var confirmation = require('./routes/patientConfirmation');
+var secretaries = require('./routes/secretaries');
 
 var app = express();
 var Users = schemas.Users;
@@ -58,6 +59,7 @@ app.use('/doctors', doctors);
 app.use('/doctors/:id', offices);
 app.use('/patients', patients);
 app.use('/confirmations', confirmation);
+app.use('/secretaries', secretaries);
 
 
 /// catch 404 and forward to error handler
@@ -73,7 +75,6 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-        console.info("caiu");
         if(!isNaN(err)){
             res.statusCode = err
             res.end()
@@ -89,14 +90,14 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    console.info("caiu");
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
+if (app.get('env') !== 'development') {
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
     });
-});
-
+}
 
 module.exports = app;

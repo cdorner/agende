@@ -5,6 +5,7 @@
         <li ng-class="{'active' : menu == 'configurations'}" ng-show="showMenu('admin', 'doctor')"><a href="#/configuracao">Configuração</a></li>
 	</ul>
 	<ul class="nav navbar-nav navbar-right">
+        <li><a href="javascript:void(0)" ng-click="userProfile()">Olá {{user.name}}</a></li>
 		<li><a href="javascript:void(0)" ng-click="logout()">Logout</a></li>
 	</ul>
 </div>

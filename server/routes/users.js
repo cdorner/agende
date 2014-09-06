@@ -1,4 +1,5 @@
 var express = require('express');
+var password = require('password-hash');
 var router = express.Router();
 
 var schemas = require('./agendaSchema');
@@ -18,10 +19,11 @@ router.get('/', function(req, res) {
     })
 });
 
-router.get('/secretaries', function(req, res) {
-    Users.find({profile : "secretary"}, function(err, users){
-        res.send(users);
-        res.end();
+router.get('/:id', function(req, res) {
+    var id = req.param("id");
+    Users.findById(id, function(err, user){
+        if(handlers.check(err, user)) return handlers.handle(err, user, res)
+        res.json(user);
     })
 });
 
@@ -32,8 +34,7 @@ router.get('/:id/offices', function(req, res) {
         if(user.profile == "admin"){
             Offices.find({doctor : doctor})
                 .exec(function(err, offices){
-                    res.send(offices);
-                    res.end();
+                    res.json(offices);
                 });
         }
         else if(user.profile == "doctor"){
@@ -41,8 +42,7 @@ router.get('/:id/offices', function(req, res) {
                 if(handlers.check(err, doctor)) handlers.handle(err, doctor, res);
                 Offices.find({doctor : doctor._id})
                     .exec(function(err, offices){
-                        res.send(offices);
-                        res.end();
+                        res.json(offices);
                     });
             })
         }
@@ -66,24 +66,31 @@ router.get('/:id/offices', function(req, res) {
 router.put('/:id', function(req, res) {
     var id = req.param('id');
     var json = req.body;
-    var conditions = {
-        _id : id
-    }, update = json;
-    Users.update(conditions, update, {}, function(err, p) {
-        if (handlers.check(err, p)){
-            return handlers.error(err, res);
+    if(json.password)
+        json.password = password.generate(json.password);
+    Users.findByIdAndUpdate(id, { $set: json}, {}, function(err, user) {
+        if(err && err.code == 11000) {
+            res.statusCode = 400;
+            res.send("Já existe um usuário utilizando esse nome de usuário.");
+            return res.end();
         }
-        res.end();
+        if (handlers.check(err, user)) return handlers.handle(err, user, res);
+        res.json(user);
     });
 });
 
 
 router.post('/', function(req, res) {
 	var json = req.body;
+    json.password = password.generate(json.password);
 	var user = new Users(json);
 	user.save(function(err, u) {
-		res.send(u);
-		res.end();
+        if(err && err.code == 11000) {
+            res.statusCode = 400;
+            res.send("Já existe um usuário utilizando esse nome de usuário.");
+            return res.end();
+        }
+		res.json(u);
 	});
 });
 

@@ -68,13 +68,15 @@ var configurations = angular.module("configurations", ['ngRoute'])
 
         $scope.$watch('office', function(office, oldOffice){
             if(office){
-                $http.get('/api/users/secretaries/').success(function(secretaries){
+                $http.get('/api/secretaries/').success(function(secretaries){
                     $scope.secretaries = [];
                     angular.forEach(secretaries, function(secretary){
-                        if(secretary.offices.indexOf(office._id) != -1)
-                            $scope.secretaries.push({id : secretary._id, name : secretary.name, selected: true});
-                        else
-                            $scope.secretaries.push({id : secretary._id, name : secretary.name, selected: false});
+                        if(secretary.offices){
+                            if(secretary.offices.indexOf(office._id) != -1)
+                                $scope.secretaries.push({id : secretary._id, name : secretary.name, selected: true});
+                            else
+                                $scope.secretaries.push({id : secretary._id, name : secretary.name, selected: false});
+                        }
                     });
                 });
             }

@@ -5,8 +5,11 @@ function error(err, res){
 }
 
 function handle(err, object, res){
-    if(err)
+    if(err){
+        console.error(err);
+        res.send("Desculpe não foi possível atender sua solicitação.");
         res.statusCode = 500;
+    }
     if(object == undefined)
         res.statusCode = 404;
     return res.end();

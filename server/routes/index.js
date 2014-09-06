@@ -1,4 +1,5 @@
 var express = require('express');
+var password = require('password-hash');
 var router = express.Router();
 var schemas = require('./agendaSchema');
 var Users = schemas.Users;
@@ -25,10 +26,10 @@ router.get('/login', function(req, res) {
 
 router.post('/login', function(req, res) {
 	var login = req.body;
-	Users.findOne({username : login.username, password : login.password}, function(err, user){
-        if(user){
-            res.send({user : user._id, profile : user.profile, logged : true});
-            return res.end();
+	Users.findOne({username : login.username}, "_id profile password", function(err, user){
+        console.info(user);
+        if(user && password.verify(login.password, user.password)){
+            res.json({user : user._id, profile : user.profile, logged : true});
         }
         res.statusCode = 404;
         res.send("Usuário ou senha inválidos.");
