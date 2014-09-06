@@ -148,7 +148,7 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/sms', function(req, 
 
     async.waterfall([
         function updateToken(callback){
-            Agenda.findByIdAndUpdate(appId, { $set : {confirmationToken: token}}, {}, function(err, appointment){
+            Agenda.findByIdAndUpdate(appId, function(err, appointment){
                 callback(err, appointment);
             });
         },
@@ -172,7 +172,7 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/sms', function(req, 
                 uri: "https://www.googleapis.com/urlshortener/v1/url",
                 method: "POST",
                 json: true,
-                body: { longUrl: util.format(process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Confirmado", appointment._id, token) }
+                body: { longUrl: util.format(process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Confirmado", appointment._id, appointment.confirmationToken) }
             }, function(error, response, body) {
                 console.info(body);
                 callback(error, appointment, patient, doctor, body.id);
@@ -183,7 +183,7 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/sms', function(req, 
                 uri: "https://www.googleapis.com/urlshortener/v1/url",
                 method: "POST",
                 json: true,
-                body: { longUrl: util.format(process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Cancelado", appointment._id, token) }
+                body: { longUrl: util.format(process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Cancelado", appointment._id, appointment.confirmationToken) }
             }, function(error, response, body) {
                 callback(error, appointment, patient, doctor, confirmation, body.id);
             });
@@ -222,11 +222,10 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/sms', function(req, 
 router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req, res){
 	var id = req.param('id');
 	var appId = req.param('appId');
-	var token = uuid.v1();
 
     async.waterfall([
         function updateToken(callback){
-            Agenda.findByIdAndUpdate(appId, { $set : {confirmationToken: token}}, {}, function(err, appointment){
+            Agenda.findById(appId, function(err, appointment){
                 callback(err, appointment);
             });
         },
@@ -255,7 +254,7 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req,
                 from: doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">",
                 to: patient.name + "<"+patient.contacts.email+">",
                 subject: util.format("Confirmação de consulta com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime),
-                html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, appointment._id, token, appointment._id, token)
+                html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, appointment._id, token, appointment._id, appointment.confirmationToken)
             }, function(error, response){
                 if(error){
                     callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."})
@@ -297,7 +296,7 @@ router.post('/doctor/:doctor/office/:office/appointments', function(req, res){
 		.where("office").equals(office)
 		.exec(function(err, appointment){
 			if(appointment == null){
-				var appointment = new Agenda({doctor : id, date: date, office : office, patient : {id : json.patient._id, name : json.patient.name}});
+				var appointment = new Agenda({doctor : id, date: date, office : office, patient : {id : json.patient._id, name : json.patient.name}, confirmationToken : uuid.v1()});
 				appointment.save(function (err) {
 					if (err) return handleError(err);
 					sendScheduleSuccessNotification(appointment);

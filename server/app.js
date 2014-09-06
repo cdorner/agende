@@ -16,6 +16,8 @@ var offices = require('./routes/offices');
 var confirmation = require('./routes/patientConfirmation');
 var secretaries = require('./routes/secretaries');
 
+var cron = require('./cron/appointmentNotify');
+
 var app = express();
 var Users = schemas.Users;
 
