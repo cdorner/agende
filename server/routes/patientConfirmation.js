@@ -4,6 +4,7 @@ var async = require('async');
 var router = express.Router();
 var schemas = require('./agendaSchema');
 var Agenda = schemas.Agenda;
+var Offices = schemas.Offices;
 
 router.get('/', function(req, res){
     res.send("hey");
@@ -30,17 +31,27 @@ router.get('/appointment/:id/:token', function(req, res){
             appointment.status = status;
             appointment.save(function(err){
                 if(err) callback(err);
-                callback(null, "Consulta "+status+" com sucesso.");
+                callback(null, appointment, status);
             })
+        },
+        function findOffice(appointment, status, callback){
+            Offices.findById(appointment.office, function(err, office){
+                callback(null, status, office);
+            });
         }
-    ], function end(err, message){
+    ], function end(err, action, office){
+        var status = action == "Confirmado" ? "Confirmada" : "Cancelada";
+        var message = "Consulta "+status+" com sucesso.";
         if(err){
             res.statusCode = err.status;
             res.send(err.message);
-        }else{
-            res.send(message);
         }
-        res.end();
+        res.render('appointmentConfirmation', {
+            title: message,
+            action: status,
+            address : office.address,
+            phone : office.contacts.phone
+        });
     });
 });
 

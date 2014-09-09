@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+        .panel-heading small{
+            color: #ffffff;
+        }
+    </style>
+  </head>
+  <body>
+  <div class="container-fluid">
+      <div class="panel panel-primary">
+          <div class="panel-heading"><h3>Agende.med <small>Agendamento da forma certa</small></h3></div>
+          <div class="panel-body">
+              <nav class="navbar navbar-default" role="navigation">
+                  <div ng-include="'menu.html'"></div>
+                  <div class="panel panel-info">
+                      <div class="panel-body">
+                          <div class="text-center">
+                              <h1><%= title %></h1>
+                              <p>Obrigado, sua consulta foi "<%= action %>" com sucesso.</p>
+                              <p>Qualquer duvida entre em contato pelo telefone <%= phone %> ou passe em nossa clinica <%= address %></p>
+                          </div>
+                      </div>
+                  </div>
+              </nav>
+          </div>
+      </div>
+  </div>
+  </body>
+</html>

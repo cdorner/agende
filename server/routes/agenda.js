@@ -136,7 +136,7 @@ function changeAppointmentStatus(req, res, status){
 		, update = { status: status}
 	;
 	Agenda.update(conditions, update, {}, function(err){
-		if (err) return handleError(err);
+		if (err) return handler.handle(err, "");
 		res.end();
 	});
 };
@@ -254,7 +254,7 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req,
                 from: doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">",
                 to: patient.name + "<"+patient.contacts.email+">",
                 subject: util.format("Confirmação de consulta com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime),
-                html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, appointment._id, token, appointment._id, appointment.confirmationToken)
+                html: util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, appointment._id, appointment.confirmationToken, appointment._id, appointment.confirmationToken)
             }, function(error, response){
                 if(error){
                     callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."})
