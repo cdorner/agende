@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-var debug = require('debug')('app');
-var app = require('../app');
-
-var schemas = require('../routes/agendaSchema');
-
 process.env.CURRENT_DOMAIN="http://draandressa.agende.med.br";
 process.env.MAIL_USER="sistema.agende.med@gmail.com";
 process.env.MAIL_PASWORD="maiden0704";
@@ -12,7 +7,16 @@ process.env.SMS_HOST="http://173.44.33.18/painel/api.ashx"
 process.env.SMS_USER="agende.med"
 process.env.SMS_PASSWORD="yp7o9NTe6iOR"
 
+// initialize queues
+var queues = require('../messages/queue');
+queues.init('mongodb://localhost/draandressadorner');
+
+var debug = require('debug')('app');
+var app = require('../app');
 app.set('port', 3000);
+
+// initialize db
+var schemas = require('../routes/agendaSchema');
 schemas.set('db', 'mongodb://localhost/draandressadorner');
 schemas.set('debug', process.env.npm_package_config_dbdebug || false);
 schemas.init();

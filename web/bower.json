@@ -14,6 +14,7 @@
     "moment": "2.8.1",
     "bootbox": "4.x.x",
     "angucomplete-alt": "0.0.x",
-    "angular-bootstrap" : "0.11.0"
+    "angular-bootstrap": "0.11.0",
+    "angular-moment": "~0.8.2"
   }
 }

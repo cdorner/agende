@@ -1,11 +1,16 @@
-angular.module("patients", ['ngRoute', 'ui.bootstrap'])
+angular.module("patients", ['ngRoute', 'ui.bootstrap', 'angularMoment'])
 
 	.controller('PatientController', function($scope, $route, $routeParams, $location, $http, $timeout) {
 	    $scope.$route = $route;
 	    $scope.$location = $location;
 	    $scope.$routeParams = $routeParams;
         $scope.page = {currentPage : 1, itemsPerPage : 10};
-        $scope.filter = {};
+        $scope.filter = {lastAppointment : {}};
+        $scope.lastAppointmentOptions = [
+            {date : 30, value : "de 30 a 60 dias"},
+            {date : 60, value : "de 60 a 90 dias"},
+            {date : 90, value : "Mais de 90 dias"}
+        ];
 
 	    $scope.$emit('ChangeTitle', "Pacientes", "patients");
 
@@ -38,8 +43,8 @@ angular.module("patients", ['ngRoute', 'ui.bootstrap'])
         };
 
         $scope.filtering = function() {
-            $http.get('/api/patients', {params : {name : $scope.filter.name,
-                                        currentPage : $scope.page.currentPage, itemsPerPage : $scope.page.itemsPerPage}})
+            $http.get('/api/patients', {params : {name : $scope.filter.name, lastAppointment : $($scope.filter.lastAppointment).attr("date"),
+                                    currentPage : $scope.page.currentPage, itemsPerPage : $scope.page.itemsPerPage}})
                 .success(function(data){
                     $scope.page = data.page;
                     $scope.patients = data.patients;

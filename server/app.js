@@ -21,6 +21,8 @@ var cron = require('./cron/appointmentNotify');
 var app = express();
 var Users = schemas.Users;
 
+var workers = require("./messages/registerWorkers");
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -101,5 +103,7 @@ if (app.get('env') !== 'development') {
         });
     });
 }
+
+workers.register();
 
 module.exports = app;

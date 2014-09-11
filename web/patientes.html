@@ -1,8 +1,23 @@
 <section>
-    <div class="col-md-5">
-        <input type="text" ng-model="filter.name" class="form-control" placeholder="Nome do paciente"></input>
+    <div class="row">
+        <div class="col-md-5">
+            <label for="birth">Nome</label>
+            <input type="text" ng-model="filter.name" class="form-control" placeholder="Nome do paciente"></input>
+        </div>
+
+        <div class="col-md-2">
+            <label for="birth">Ultima consulta</label>
+            <p class="input-group">
+                <select ng-model="filter.lastAppointment" class="form-control" ng-options="option.value for option in lastAppointmentOptions" required>
+                    <option value=""></option>
+                </select>
+            </p>
+        </div>
+        <div class="pull-right" style="padding-top: 20px;">
+            <button type="button" class="btn btn-primary" ng-click="filtering()">Filtrar</button>
+        </div>
     </div>
-    <button type="button" class="btn btn-primary" ng-click="filtering()">Filtrar</button>
+
 </section>
 
 <div>
@@ -13,6 +28,8 @@
 				<th>Nascimento</th>
 				<th>Contato</th>
 				<th>Convênio</th>
+                <th>Ultima Consulta em</th>
+                <th>Ultima notificação em</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -22,12 +39,14 @@
 				<td>{{patient.birth | date:format="dd/MM/y"}}</td>
 				<td>{{patient.contacts.phone}}  / {{patient.contacts.cell}} / {{patient.contacts.email}}</td>
 				<td>{{patient.healthCare.name}} - {{patient.healthCare.number}}</td>
-				<td>
+                <td><span am-time-ago="patient.metadata.lastAppointment"  title="{{patient.metadata.lastAppointment | date:'dd/MM/yyyy'}}"></span></td>
+                <td><span am-time-ago="patient.metadata.lastNotification" title="{{patient.metadata.lastAppointment | date:'dd/MM/yyyy'}}"></span></td>
+                <td>
 					<button id="btn-edit" ng-click="openEdit(patient)" class="btn btn-primary">Editar</button>
 				</td>
-			</tr>
+            </tr>
 			<tr ng-show="patients.length == 0" class="text-center">
-				<td colspan="5">Nenhum paciente encontrado</td>
+				<td colspan="7">Nenhum paciente encontrado</td>
 			</tr>
 		</tbody>
 	</table>

@@ -68,8 +68,9 @@ var PatientsSchema = new Schema({
 	name : String,
 	birth : Date,
 	contacts : {},
-	configuration : {},
-	healthCare: {}
+	configuration : {}, // TODO Remove attribute
+	healthCare: {},
+    metadata : {}
 });
 
 var Patients = mongoose.model('Patients', PatientsSchema);

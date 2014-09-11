@@ -6,40 +6,41 @@
     "start": "nodejs start ./bin/localhost"
   },
   "config": {
-	    "port": "3000",
-	    "db" : "mongodb://localhost/agende"
+    "port": "3000",
+    "db": "mongodb://localhost/agende"
   },
   "author": {
-	    "name": "Christian Dorner",
-	    "email": "christian.dorner@gmail.com",
-	    "url": "https://github.com/cdorner/"
+    "name": "Christian Dorner",
+    "email": "christian.dorner@gmail.com",
+    "url": "https://github.com/cdorner/"
   },
   "repository": {
-	    "type": "git",
-	    "url": "https://github.com/cdorner/agende"
+    "type": "git",
+    "url": "https://github.com/cdorner/agende"
   },
   "engines": {
-	    "nodejs": ">= 0.10.30",
-	    "npm": ">= 1.3.10"
+    "nodejs": ">= 0.10.30",
+    "npm": ">= 1.3.10"
   },
   "dependencies": {
-      "async" : "0.9.0",
-      "body-parser": "~1.0.0",
-      "cookie-parser": "~1.0.1",
-      "debug": "~0.7.4",
-      "ejs": "~0.8.5",
-      "express": "~4.2.0",
-      "moment" : "2.8.1",
-      "mongoose" : "3.8.x",
-      "morgan": "~1.0.0",
-      "node-uuid" : "1.4.1",
-      "nodemailer" : "1.1.1",
-      "nodemailer-smtp-transport" : "0.1.12",
-      "request" : "2.40.0",
-      "static-favicon": "~1.0.0",
-      "password-hash": "1.2.2",
-      "cron" : "1.0.4",
-      "time" : "0.11.0"
+    "async": "0.9.0",
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "cron": "1.0.4",
+    "debug": "~0.7.4",
+    "ejs": "~0.8.5",
+    "express": "~4.2.0",
+    "moment": "2.8.1",
+    "mongoose": "3.8.x",
+    "monq": "^0.3.1",
+    "morgan": "~1.0.0",
+    "node-uuid": "1.4.1",
+    "nodemailer": "1.1.1",
+    "nodemailer-smtp-transport": "0.1.12",
+    "password-hash": "1.2.2",
+    "request": "2.40.0",
+    "static-favicon": "~1.0.0",
+    "time": "^0.11.0"
   },
   "main": "app.js"
 }

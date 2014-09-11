@@ -6,6 +6,7 @@ var async = require('async');
 var request = require("request")
 var mail = require('../feature-email/mail');
 var handler = require("./handlers");
+var queues = require('../messages/queue');
 var router = express.Router();
 var schemas = require('./agendaSchema');
 var Agenda = schemas.Agenda;
@@ -258,6 +259,7 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req,
                 if(error){
                     callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."})
                 }
+                queues.dispatch('notificationSended', { patient: patient._id });
                 callback(null, "Solicitaçao de confirmaçao enviada.");
             });
         }
@@ -294,6 +296,7 @@ router.post('/doctor/:doctor/office/:office/appointments', function(req, res){
 				res.statusCode = 400;
 				res.send("Já existe uma consulta marcada nesse horário para esse consultório.");
 			}
+            queues.dispatch('newAppointment', { appointment: appointment._id });
 			res.end();
 		});
 });
@@ -310,6 +313,7 @@ function sendScheduleSuccessNotification(appointment){
                 var subject = util.format("Consulta agendada com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime);
                 var html    = util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime);
                 mail.send(from, to, subject, html);
+                queues.dispatch('notificationSended', { patient: patient._id });
 			});
 		};
 	});

@@ -1,5 +1,6 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var moment = require("moment");
 var async = require('async');
 var router = express.Router();
 var paginator = require('./paginator');
@@ -12,9 +13,17 @@ router.get('/', function(req, res) {
     var page = {};
 	if (req.param("name"))
 		filter.name = new RegExp(req.param("name"), 'i');
+    if(req.param("lastAppointment") != undefined){
+        var upper = moment().subtract(req.param("lastAppointment"), "days").toDate();
+        var lower = moment(upper).subtract(30, "days").toDate();
+        if(req.param("lastAppointment") == "90")
+            lower = moment(0).toDate();
+        filter["metadata.lastAppointment"] = { $lte : upper, $gte : lower};
+    }
     page.currentPage = req.param("currentPage");
     page.itemsPerPage = req.param("itemsPerPage");
     filtered(filter, page, function(err, patients){
+            if(handlers.check(err, patients)) return handlers.handle(err, patients, res);
             res.send({page : page, patients : patients});
             res.end();
         }
