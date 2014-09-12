@@ -92,6 +92,12 @@ var UsersSchema = new Schema({
 
 var Users = mongoose.model('Users', UsersSchema);
 
+var PatientRescueSchema = new Schema({
+    text : String
+});
+
+var PatientRescue = mongoose.model('PatientRescue', PatientRescueSchema);
+
 module.exports = {
 	Agenda : Agenda,
 	Configurations : Configurations,
@@ -100,6 +106,7 @@ module.exports = {
 	TinyUrl : TinyUrl,
 	Users : Users,
 	Offices : Offices,
+    PatientRescue : PatientRescue,
 	set : set,
 	init : init
 }

@@ -15,6 +15,7 @@ var patients = require('./routes/patients');
 var offices = require('./routes/offices');
 var confirmation = require('./routes/patientConfirmation');
 var secretaries = require('./routes/secretaries');
+var rescues = require('./routes/rescues');
 
 var cron = require('./cron/appointmentNotify');
 
@@ -49,7 +50,7 @@ var requireAuthentication = function(req, res, next){
 };
 
 var securePaths = ["/agenda/", "/agenda/*", "/users", "/users/*", "/configurations", "/configurations/*",
-                   "/doctors", "/doctors/*", "/patients", "/patients/*"];
+                   "/doctors", "/doctors/*", "/patients", "/patients/*", "/rescues", "rescues/*"];
 while (securePaths.length != 0) {
     var path = securePaths.pop();
     app.all(path, requireAuthentication);
@@ -64,7 +65,7 @@ app.use('/doctors/:id', offices);
 app.use('/patients', patients);
 app.use('/confirmations', confirmation);
 app.use('/secretaries', secretaries);
-
+app.use('/rescues', rescues);
 
 /// catch 404 and forward to error handler
 var err = new Error('Not Found');

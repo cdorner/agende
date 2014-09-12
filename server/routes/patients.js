@@ -7,6 +7,7 @@ var paginator = require('./paginator');
 var handlers = require('./handlers');
 var schemas = require('./agendaSchema');
 var Patients = schemas.Patients;
+var PatientRescue = schemas.PatientRescue;
 
 router.get('/', function(req, res) {
 	var filter = {};

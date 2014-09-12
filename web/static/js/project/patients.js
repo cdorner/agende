@@ -22,7 +22,7 @@ angular.module("patients", ['ngRoute', 'ui.bootstrap', 'angularMoment'])
 	    	$scope.patient = patient;
 	    	$("#modal").modal("show");
 	    };
-	    
+
 	    $scope.update = function(){
 	    	$http.put("/api/patients/"+ $scope.patient._id, $scope.patient)
 			.success(function(){
@@ -33,6 +33,9 @@ angular.module("patients", ['ngRoute', 'ui.bootstrap', 'angularMoment'])
 	    
 	    $scope.dismiss = function(){
 	    	$scope.patient = null;
+            $scope.rescueText = null;
+            $("#rescue").modal("hide");
+            $("#modal").modal("hide");
 	    };
 
         $scope.open = function($event) {
@@ -58,6 +61,43 @@ angular.module("patients", ['ngRoute', 'ui.bootstrap', 'angularMoment'])
             }
         }, true);
 
-	    $scope.Init();
+        $scope.$watch('filter.lastAppointment', function(newName, oldName){
+            $scope.page.currentPage = 1;
+            $scope.filtering();
+        }, true);
+
+        $scope.rescue = function(patient){
+            $scope.patient = patient;
+            $scope.error = null;
+            $http.get("/api/rescues").success(function(data){
+                $scope.rescueText = data.text;
+                if(!$scope.patient.contacts.email) {
+                    $scope.error = "Paciente não tem email configurado, a notificação não poderá ser enviada.";
+                }
+                $("#rescue").modal("show");
+            });
+        };
+
+        $scope.confirmRescue = function(){
+            if(!$scope.patient.contacts.email) {
+                return Message.error("Paciente não tem email configurado, a notificação não poderá ser enviada.");
+            }
+            $http.post("/api/rescues/"+$scope.patient._id, {text : $scope.rescueText}).success(function(data){
+                Message.show("Mensagem foi enfileirada e sera enviada ao paciente.");
+                $scope.patient = null;
+                $scope.error = null;
+                $("#rescue").modal("hide");
+            });
+        };
+
+        $scope.update = function(){
+            $http.put("/api/patients/"+ $scope.patient._id, $scope.patient)
+                .success(function(){
+                    Message.show("Paciente salvo com sucesso.");
+                    $("#modal").modal("hide");
+                });
+        };
+
+        $scope.Init();
 	})
 ;
