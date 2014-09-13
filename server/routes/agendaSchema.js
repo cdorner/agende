@@ -33,7 +33,8 @@ var AgendaSchema = new Schema({
 	client : String,
 	status : {type : String, default : "Agendado"}, // Agendado, Confirmado, Cancelado, Faltou
 	patient : {},
-	confirmationToken : String
+	confirmationToken : String,
+    metadata : {}
 });
 
 var Agenda = mongoose.model('Agenda', AgendaSchema);
