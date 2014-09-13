@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">agende</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="host">http://172.16.143.1/api</string>
+    
+    <string name="appointment_label_time">Consulta às:</string>
+    <string name="appointment_label_with">com</string>
+    <string name="appointment_label_is">está</string>
+</resources>
