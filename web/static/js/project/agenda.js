@@ -258,7 +258,9 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", "$cook
 	};
 	
 	$scope.updatePatient = function(){
-		$http.put("/api/patients/"+ $scope.patient._id, $scope.patient)
+        var patient = angular.copy($scope.patient);
+        delete patient._id;
+		$http.put("/api/patients/"+ $scope.patient._id, patient)
 		.success(function(){
 			Message.show("Paciente salvo com sucesso.");
 			$("#new-patient").modal("hide");

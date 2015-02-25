@@ -67,8 +67,8 @@ app.use('/confirmations', confirmation);
 app.use('/secretaries', secretaries);
 app.use('/rescues', rescues);
 
-var agendaMobile = require('./mobile/agenda');
-app.use('/mobile/agenda', agendaMobile);
+//var agendaMobile = require('./mobile/agenda');
+//app.use('/mobile/agenda', agendaMobile);
 
 /// catch 404 and forward to error handler
 var err = new Error('Not Found');

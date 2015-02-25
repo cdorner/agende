@@ -24,13 +24,15 @@ angular.module("patients", ['ngRoute', 'ui.bootstrap', 'angularMoment'])
 	    };
 
 	    $scope.update = function(){
-	    	$http.put("/api/patients/"+ $scope.patient._id, $scope.patient)
+            var patient = angular.copy($scope.patient);
+            delete patient._id;
+            $http.put("/api/patients/"+ $scope.patient._id, patient)
 			.success(function(){
 				Message.show("Paciente salvo com sucesso.");
 				$("#modal").modal("hide");
 			});
 	    };
-	    
+
 	    $scope.dismiss = function(){
 	    	$scope.patient = null;
             $scope.rescueText = null;
@@ -88,14 +90,6 @@ angular.module("patients", ['ngRoute', 'ui.bootstrap', 'angularMoment'])
                 $scope.error = null;
                 $("#rescue").modal("hide");
             });
-        };
-
-        $scope.update = function(){
-            $http.put("/api/patients/"+ $scope.patient._id, $scope.patient)
-                .success(function(){
-                    Message.show("Paciente salvo com sucesso.");
-                    $("#modal").modal("hide");
-                });
         };
 
         $scope.Init();
