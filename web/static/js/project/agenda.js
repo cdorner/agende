@@ -18,15 +18,15 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", "$cook
 		$scope.autoCompletePatient = {};
 		$scope.appointment = {};
 		$scope.initDoctors();
-		
-		$scope.mapIsoDate["Segunda"] = "Monday";
-		$scope.mapIsoDate["Terça"] = "Tuesday";
-		$scope.mapIsoDate["Quarta"] = "Wednesday";
-		$scope.mapIsoDate["Quinta"] = "Thursday";
-		$scope.mapIsoDate["Sexta"] = "Friday";
-		$scope.mapIsoDate["Sábado"] = "Saturday";
-		$scope.mapIsoDate["Domingo"] = "Sunday";
-	};
+
+        $scope.mapIsoDate["Domingo"] = "0";
+        $scope.mapIsoDate["Segunda"] = "1";
+        $scope.mapIsoDate["Terça"] = "2";
+        $scope.mapIsoDate["Quarta"] = "3";
+        $scope.mapIsoDate["Quinta"] = "4";
+        $scope.mapIsoDate["Sexta"] = "5";
+        $scope.mapIsoDate["Sábado"] = "6";
+    };
 	
 	$scope.initDoctors = function(){
 		$http.get('/api/doctors')
@@ -128,7 +128,7 @@ controller("AgendaController", ["$scope", "$http", "$timeout", "$filter", "$cook
 	$scope.notWorkDay = function(date){
 		for (var int = 0; int < $scope.office.configuration.weekDays.length; int++) {
 			var o = $scope.office.configuration.weekDays[int];
-			if(moment(date).format("dddd") == $scope.mapIsoDate[o.day]){
+			if(moment(date).day() == $scope.mapIsoDate[o.day]){
 				return !o.selected;
 			}
 		}
