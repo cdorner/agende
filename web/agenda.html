@@ -18,8 +18,27 @@
 		<span class="glyphicon glyphicon-forward" ng-click="next()" title="amanhã"></span>
 		<span class="glyphicon glyphicon-fast-forward" ng-click="next(7)" title="pŕoxima semana"></span>
 	</div>
-	
+
 	<div ng-show="agenda">
+        <!--
+        <div class="row">
+            <div class="col-xs-12 col-md-1 appointment">&nbsp; </div>
+            <div class="col-xs-12 col-md-1 appointment" ng-repeat="day in agenda.days">{{day | date:format="dd/MM/yyyy / EEEE"}}</div>
+        </div>
+
+        <div class="row" ng-repeat="appointment in agenda.appointments">
+            <div class="col-xs-3 col-sm-6 col-lg-1 appointment">{{appointment.hour | date:format="h:mm"}}</div>
+            <div class="col-xs-9 col-sm-6 col-lg-1 appointment"
+                 ng-repeat="client in appointment.clients"
+                 ng-class="{'bg-success' : client.status == 'Confirmado', 'bg-danger' : client.status == 'Cancelado', 'bg-warning' : client.status == 'Faltou', 'bg-notworkday' : notWorkDay(client.date)}"
+                 ng-click="select(client)">
+                {{client.name}} {{client.phone}} &nbsp;
+            </div>
+        </div>
+-->
+
+
+        <div class="table-responsive">
 		<table class="table table-bordered agenda">
 			<thead>
 				<tr>
@@ -38,6 +57,7 @@
 				</tr>
 			</tbody>
 		</table>
+        </div>
 	</div>
 </div>
 
@@ -55,35 +75,66 @@
 					<input type="hidden" ng-model="appointment.id"></input> 
 					<input type="hidden" ng-model="appointment.date"></input> 
 					<div class="form-group">
+                        <div class="row">
 						<label class="" for="patient">Paciente</label>
-						<angucomplete-alt id="patient" pause="400" selected-object="setPatient"
-				              remote-url="/api/patients?name=" remote-url-data-field="patients" input-class="form-control auto-complete-patient"
-				              title-field="name" field-required="true" match-class="highlight" placeholder="Informe o nome do paciente..."
-				              text-searching="Buscando paciente..." text-no-results="Nenhum resultado encontrado"
-				              input-class="form-control form-control-small" ng-hide="appointment.id">
-			            </angucomplete-alt>
+                            <div class="col-xs-12 col-md-12">
+                                <angucomplete-alt id="patient" pause="400" selected-object="setPatient"
+                                      remote-url="/api/patients?name=" remote-url-data-field="patients" input-class="form-control auto-complete-patient"
+                                      title-field="name" field-required="true" match-class="highlight" placeholder="Informe o nome do paciente..."
+                                      text-searching="Buscando paciente..." text-no-results="Nenhum resultado encontrado"
+                                      input-class="form-control form-control-small" ng-hide="appointment.id">
+                                </angucomplete-alt>
+                            </div>
+                        </div>
 					</div>
 					<div class="form-group">
-						<span ng-show="appointment.id">{{patient.name}}</span>
-						<label class="" for="patient" ng-show="patient.contacts">Contato:</label>
-						<span ng-show="patient.contacts">{{patient.contacts.phone}} - {{patient.contacts.email}}</span>
-						<label class="" for="" ng-show="patient.healthCare">Convênio:</label>
-						<span ng-show="patient.contacts">{{patient.healthCare.name}} - {{patient.healthCare.number}}</span>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6" ng-show="appointment.id"><span>{{patient.name}}</span></div>
+                            <div class="col-xs-12 col-md-6" ng-show="patient.contacts">
+                                <label class="" for="patient">Contato:</label>
+                                <span ng-show="patient.contacts">{{patient.contacts.phone}} - {{patient.contacts.email}}</span>
+                            </div>
+                            <div class="col-xs-12 col-md-12" ng-show="patient.healthCare">
+                                <label class="" for="" >Convênio:</label>
+                                <span ng-show="patient.contacts">{{patient.healthCare.name}} - {{patient.healthCare.number}}</span>
+                            </div>
+                        </div>
 					</div>
 				</form>
 			</div>
-			<div class="modal-footer" ng-show="appointment.id">
-				<button type="button" class="btn btn-default pull-left" ng-click="dismissAppointmment()" data-dismiss="modal">Fechar</button>
-				<button type="button" class="btn btn-default" ng-click="editPatient()">Editar</button>
-				<button id="btn-cancel-appointment" ng-click="cancelAppointment()" class="btn btn-danger" data-dismiss="clickover">Cancelar</button>
-				<button id="btn-absent-appointment" ng-click="absentAppointment()" class="btn btn-warning" data-dismiss="clickover">Faltou</button>
-				<button id="btn-confirmation-email" ng-click="askConfirmationByEmail()" class="btn btn-primary" data-dismiss="clickover">Confirmação por email</button>
-                <button id="btn-confirmation-sms" ng-click="askConfirmationBySMS()" class="btn btn-primary" data-dismiss="clickover">Confirmação por sms</button>
-				<button id="btn-confirm-appointment" ng-click="confirmAppointment()" class="btn btn-success" data-dismiss="clickover">Confirmar</button>
+            <div class="modal-footer" ng-show="appointment.id">
+                <div>
+                    <div clas="row grid">
+                        <div class="col-xs-6 col-md-1">
+                            <button type="button" class="btn btn-default pull-left" ng-click="dismissAppointmment()" data-dismiss="modal">Fechar</button>
+                        </div>
+                        <div class="col-xs-6 col-md-1">
+                            <button type="button" class="btn btn-default" ng-click="editPatient()">Editar</button>
+                        </div>
+                        <div class="col-xs-4 col-md-1 col-md-offset-5" style="margin-top: 10px;">
+                            <button id="btn-absent-appointment" ng-click="absentAppointment()" class="btn btn-warning" data-dismiss="clickover">Faltou</button>
+                        </div>
+                        <div class="col-xs-4 col-md-2" style="margin-top: 10px;">
+                            <button id="btn-confirm-appointment" ng-click="confirmAppointment()" class="btn btn-success" data-dismiss="clickover">Confirmar</button>
+                        </div>
+                        <div class="col-xs-4 col-md-1" style="margin-top: 10px;">
+                            <button id="btn-cancel-appointment" ng-click="cancelAppointment()" class="btn btn-danger" data-dismiss="clickover">Cancelar</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-xs-offset-3 col-md-3 col-md-offset-6" style="margin-top: 10px;">
+                            <button id="btn-confirmation-email" ng-click="askConfirmationByEmail()" class="btn btn-primary" data-dismiss="clickover">Confirmação por email</button>
+                        </div>
+
+                        <div class="col-xs-6 col-xs-offset-3 col-md-2 col-md-offset-0" style="margin-top: 10px;">
+                            <button id="btn-confirmation-sms" ng-click="askConfirmationBySMS()" class="btn btn-primary" data-dismiss="clickover">Confirmação por sms</button>
+                        </div>
+                    </div>
+                </div>
 			</div>
 			<div class="modal-footer" ng-hide="appointment.id">
 				<button type="button" class="btn btn-default pull-left" ng-click="newPatient()">Novo paciente</button>
-				<button type="button" class="btn btn-default" ng-show="form.$valid && patient._id" ng-click="editPatient()">Editar</button>
+				<button type="button" class="btn btn-default pull-left" ng-show="form.$valid && patient._id" ng-click="editPatient()">Editar</button>
 				<button type="button" class="btn btn-default" ng-click="dismissAppointmment()" data-dismiss="modal">Cancelar</button>
 				<button type="button" class="btn btn-primary" ng-click="schedule()" ng-disabled="form.$invalid || !patient._id">Agendar</button>
 			</div>
@@ -142,12 +193,12 @@
                         </div>
                     </div>
 					<div class="form-group">
-						<div>
+                        <div class="col-sm-4">
 							<label for="convenio">Convênio</label>
 							<input type="text" class="form-control" id="convenio" placeholder="Convênio"
 								ng-model="patient.healthCare.name" ></input>
 						</div>
-						<div>
+                        <div class="col-sm-4">
 							<label for="convenio">Nr. Carteirinha</label>
 							<input type="text" class="form-control" id="convenio" placeholder="Carteirinha"
 								ng-model="patient.healthCare.number" ></input>

@@ -1,0 +1,51 @@
+form input.ng-invalid.ng-dirty {
+    background-color: #fcf8e3;
+}
+
+form input.ng-valid.ng-dirty {
+    background-color: #dff0d8;
+}
+
+.agenda td {
+    cursor: pointer;
+}
+
+.glyphicon {
+    cursor: pointer;
+    padding: 2px;
+}
+
+.bb-alert {
+    position: fixed;
+    top: 15%;
+    right: 0;
+    margin-bottom: 0;
+    font-size: 1.2em;
+    padding: 1em 1.3em;
+    z-index: 2000;
+}
+
+.bg-notworkday{
+    background-color: #fcf8e3;
+}
+
+.auto-complete-patient {
+    width: 500px !important;
+}
+
+.panel-heading small{
+    color: #ffffff;
+}
+
+section {
+    padding: 10px;
+}
+
+#add form{
+    margin-left: 20px;
+}
+
+.appointment {
+    padding: 10px;
+    border: 1px solid rgba(86,61,124,.2);
+}

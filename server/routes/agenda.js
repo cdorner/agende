@@ -43,7 +43,7 @@ router.get('/doctor/:id', function(req, res){
 
 function buildAgenda(doctor, office, paramLower, paramUpper, callback){
     var now = (paramLower == null ? moment(new Date()) : moment(paramLower)).startOf("day");
-    var forwardSevenDays = now.clone().add(6 , "days").endOf("day");
+    var forwardSevenDays = (paramUpper == null ? now.clone().add(6 , "days") : moment(paramUpper)).endOf("day");
     if(!office.configuration) office.configuration = schemas.Configurations;
     var startAt = onlyHourAndMinutes(office.configuration.firstAppointmentHour) || "09:00";
     var stopAt = onlyHourAndMinutes(office.configuration.lastAppointmentHour) || "17:00";

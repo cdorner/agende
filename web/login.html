@@ -1,5 +1,7 @@
 <html ng-app="login">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 	<script type="text/javascript" src="/bower_components/angular/angular.min.js"></script>
 	<script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
 	
@@ -8,12 +10,49 @@
 	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.css.map">
 	
 	<style type="text/css">
+        @media screen and (max-device-width: 480px) and (orientation: portrait){
+            /* some CSS here */
+        }
+
+        /* #### Mobile Phones Landscape #### */
+        @media screen and (max-device-width: 640px) and (orientation: landscape){
+            /* some CSS here */
+        }
+
+        /* #### Mobile Phones Portrait or Landscape #### */
+        @media screen and (max-device-width: 640px){
+            .login {
+                width: 100%;
+                height: 100%;
+                padding: 30px;
+            }
+
+            table {
+                border: none;
+            }
+        }
+
+        /* #### iPhone 4+ Portrait or Landscape #### */
+        @media screen and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2){
+            /* some CSS here */
+        }
+
+        /* #### Tablets Portrait or Landscape #### */
+        @media screen and (min-device-width: 768px) and (max-device-width: 1024px){
+            /* some CSS here */
+        }
+
+        /* #### Desktops #### */
+        @media screen and (min-width: 1024px){
+            .login {
+                margin-top: 15%;
+                margin-left: 40%;
+                width: 400px;
+                padding: 30px;
+            }
+        }
+
 		.login {
-			margin-top: 15%;
-			margin-left: 40%;
-			width: 400px;
-			padding: 30px;
-			
 			background: rgb(216,224,222); /* Old browsers */
 			background: -moz-linear-gradient(top,  rgba(216,224,222,1) 0%, rgba(174,191,188,1) 22%, rgba(153,175,171,1) 33%, rgba(142,166,162,1) 50%, rgba(130,157,152,1) 67%, rgba(78,92,90,1) 82%, rgba(14,14,14,1) 100%); /* FF3.6+ */
 			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(216,224,222,1)), color-stop(22%,rgba(174,191,188,1)), color-stop(33%,rgba(153,175,171,1)), color-stop(50%,rgba(142,166,162,1)), color-stop(67%,rgba(130,157,152,1)), color-stop(82%,rgba(78,92,90,1)), color-stop(100%,rgba(14,14,14,1))); /* Chrome,Safari4+ */
@@ -28,23 +67,22 @@
 <body ng-controller="LoginController">
 	<div class="container-fluid">
 		<form name="login" novalidate class="simple-form form-horizontal login" role="form">
-			<div class="form-group">
-				<div class="col-sm-10">
-					<label for="username">Username *</label>
-					<input type="text" class="form-control" id="username" placeholder="username"
-						ng-model="login.username" required></input>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-10">
-					<label for="password">Senha *</label>
-					<input type="password" class="form-control" id="password" placeholder="Senha"
-						ng-model="login.password" required></input>
-				</div>
-			</div>
-			<div class="form-group">
-				<input type="submit" class="btn btn-primary pull-right" ng-click="do()" ng-disabled="login.$invalid" value="Login"></input>
-			</div>
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <td><label for="username">Username</label></td>
+                        <td><input type="text" class="form-control" id="username" placeholder="username" ng-model="login.username" required></input></td>
+                    </tr>
+                    <tr>
+                       <td><label for="password">Senha</label></td>.
+                       <td><input type="password" class="form-control" id="password" placeholder="Senha" ng-model="login.password" required></input></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" class="btn btn-primary pull-right" ng-click="do()" ng-disabled="login.$invalid" value="Login"></input></td>
+                    </tr>
+                </table>
+            </div>
 			<div id="msg" class="alert alert-danger" ng-hide="message == null">{{message}}</div>
 		</form>
 	</div>
@@ -66,7 +104,7 @@
 					})
 					.error(function(data, status, headers, config) {
                         if(status >= 500){
-                            $scope.message = "Desculpe o sistema nao esta acessivel no momento";
+                            $scope.message = "Desculpe o sistema não está acessivel no momento";
                             return;
                         }
 						$scope.message = data;
