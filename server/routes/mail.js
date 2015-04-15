@@ -1,6 +1,6 @@
 var express = require('express');
-var mail = require('../feature-email/mail');
 var router = express.Router();
+var mail = require('../feature-email/mail');
 
 router.post('/', function(req, res){
     var name = req.param('name');
@@ -8,13 +8,24 @@ router.post('/', function(req, res){
     var subject = req.param('subject');
     var message = req.param('message');
 
-    mail.send(email, process.env.MAIL_SITE, subject, message, function(error, response){
+    var body = {
+        from: name + " <"+ email +">",
+        to: process.env.MAIL_SITE,
+        subject: subject,
+        html: "Email enviado por " + name + " " + email + " <br/><br/>" + message,
+        replyTo: email
+    };
+
+
+    mail.send(body, function(error, info){
         if(error){
-            console.info(error);
-            res.send(error);
+            console.log(error);
+        }else{
+            console.log('Message sent: ' + info.response);
         }
         res.end();
     });
+
 });
 
 module.exports = router;

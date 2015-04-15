@@ -11,6 +11,12 @@ function send(from, to, subject, html, callback){
     });
 }
 
+function send(email, callback){
+    smtpProvider().sendMail(email, function(error, response){
+        if(callback) callback(error, response);
+    });
+}
+
 function smtpProvider(){
     return nodemailer.createTransport({
         service: 'Gmail',
