@@ -26,6 +26,8 @@ function debug(message){
 		console.log(message)
 };
 
+// init agenda module
+
 var AgendaSchema = new Schema({
 	doctor : String,
 	office : String,
@@ -99,6 +101,58 @@ var PatientRescueSchema = new Schema({
 
 var PatientRescue = mongoose.model('PatientRescue', PatientRescueSchema);
 
+// end agenda module
+
+// init finance module
+
+var ProceedingsSchema = new Schema({
+    name : {type : String, index: { unique: true }},
+    value : Number
+});
+
+var PatientProceedingsSchema = new Schema({
+    patient : { type: Schema.Types.ObjectId, ref: 'Patients' },
+    proceeding : { type: Schema.Types.ObjectId, ref: 'Proceedings' },
+    value : Number
+});
+
+var PatientTreatmentsSchema = new Schema({
+    patient : { type: Schema.Types.ObjectId, ref: 'Patients' },
+    proceedings : [{ proceeding : {type: Schema.Types.ObjectId, ref: 'Proceedings'}, value : Number}],
+    payments : [{
+        value : Number,
+        date : Date,
+        proceeding : { type: Schema.Types.ObjectId, ref: 'Proceedings'},
+        installment : String
+    }],
+    date : Date,
+    installments : String,
+    status : { type : String, default : "On_Going"} // On_Going, Finished
+});
+
+PatientTreatmentsSchema.virtual('value').get(function () {
+    var value = 0;
+    for(var i = 0; i < this.proceedings.length; i++){
+        value += this.proceedings[i].value;
+    }
+    return value;
+});
+
+PatientTreatmentsSchema.virtual('payed').get(function () {
+    var value = 0;
+    for(var i = 0; i < this.payments.length; i++){
+        value += this.payments[i].value;
+    }
+    return value;
+});
+PatientTreatmentsSchema.set('toJSON', { getters: true, virtuals: true });
+
+var Proceedings = mongoose.model('Proceedings', ProceedingsSchema);
+var PatientProceedings = mongoose.model('PatientProceedings', PatientProceedingsSchema);
+var PatientTreatments = mongoose.model('PatientTreatments', PatientTreatmentsSchema);
+
+// end finance module
+
 module.exports = {
 	Agenda : Agenda,
 	Configurations : Configurations,
@@ -108,6 +162,9 @@ module.exports = {
 	Users : Users,
 	Offices : Offices,
     PatientRescue : PatientRescue,
+    Proceedings : Proceedings,
+    PatientProceedings : PatientProceedings,
+    PatientTreatments : PatientTreatments,
 	set : set,
 	init : init
 }

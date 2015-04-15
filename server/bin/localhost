@@ -2,6 +2,7 @@
 process.env.CURRENT_DOMAIN="http://agende";
 process.env.MAIL_USER="christian.dorner@gmail.com";
 process.env.MAIL_PASWORD="maiden0109";
+process.env.MAIL_SITE="christian.dorner@gmail.com";
 
 process.env.SMS_HOST="http://173.44.33.18/painel/api.ashx"
 process.env.SMS_USER="agende.med"

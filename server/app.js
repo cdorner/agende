@@ -16,6 +16,10 @@ var offices = require('./routes/offices');
 var confirmation = require('./routes/patientConfirmation');
 var secretaries = require('./routes/secretaries');
 var rescues = require('./routes/rescues');
+var mail = require('./routes/mail');
+
+var proceedings = require('./routes/finance/proceedingsService');
+var patientTreatment = require('./routes/finance/patientTreatmentService');
 
 var cron = require('./cron/appointmentNotify');
 
@@ -66,6 +70,10 @@ app.use('/patients', patients);
 app.use('/confirmations', confirmation);
 app.use('/secretaries', secretaries);
 app.use('/rescues', rescues);
+app.use('/mail', mail);
+
+app.use('/proceedings', proceedings);
+app.use('/treatments', patientTreatment);
 
 //var agendaMobile = require('./mobile/agenda');
 //app.use('/mobile/agenda', agendaMobile);
