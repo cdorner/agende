@@ -7,6 +7,7 @@ router.post('/', function(req, res){
     var email = req.param('email');
     var subject = req.param('subject');
     var message = req.param('message');
+    var successPage = req.param('successPage');
 
     var body = {
         from: name + " <"+ email +">",
@@ -23,6 +24,7 @@ router.post('/', function(req, res){
         }else{
             console.log('Message sent: ' + info.response);
         }
+        res.redirect(successPage);
         res.end();
     });
 

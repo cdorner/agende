@@ -2,7 +2,7 @@
 process.env.CURRENT_DOMAIN="http://draandressa.agende.med.br";
 process.env.MAIL_USER="sistema.agende.med@gmail.com";
 process.env.MAIL_PASWORD="maiden0704";
-process.env.MAIL_SITE="christian.dorner@gmail.com";
+process.env.MAIL_SITE="dra.andressadorner@gmail.com";
 
 process.env.SMS_HOST="http://173.44.33.18/painel/api.ashx"
 process.env.SMS_USER="agende.med"
