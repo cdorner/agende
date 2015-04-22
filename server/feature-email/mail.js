@@ -1,20 +1,23 @@
 var nodemailer = require("nodemailer");
 
 function send(from, to, subject, html, callback){
-    smtpProvider().sendMail({
-        from: from,
-        to: to,
-        subject: subject,
-        html: html
-    }, function(error, response){
+    var options = {};
+    if(arguments.length <= 2){
+        options = from;
+        callback = to;
+    } else {
+        options = {
+            from: from,
+            to: to,
+            subject: subject,
+            html: html,
+            replyTo: process.env.MAIL_SITE
+        };
+    }
+    smtpProvider().sendMail(options, function(error, response){
         if(callback) callback(error, response);
     });
-}
 
-function send(email, callback){
-    smtpProvider().sendMail(email, function(error, response){
-        if(callback) callback(error, response);
-    });
 }
 
 function smtpProvider(){

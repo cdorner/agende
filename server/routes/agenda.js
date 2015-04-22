@@ -9,10 +9,12 @@ var handler = require("./handlers");
 var queues = require('../messages/queue');
 var router = express.Router();
 var schemas = require('./agendaSchema');
+var fs = require('fs');
 var Agenda = schemas.Agenda;
 var Doctors = schemas.Doctors;
 var Patients = schemas.Patients;
 var Offices = schemas.Offices;
+
 
 router.get('/doctor/:id', function(req, res){
 	var doctorId = req.param("id");
@@ -220,7 +222,6 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/sms', function(req, 
     });
 });
 
-
 router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req, res){
 	var id = req.param('id');
 	var appId = req.param('appId');
@@ -247,23 +248,37 @@ router.post('/doctor/:id/appointment/:appId/askconfirmation/mail', function(req,
             });
         },
         function sendEmail(appointment, patient, doctor, callback){
-            var message = "Oi %s, você tem uma consulta com o %s %s às %s, o que você deseja fazer? " +
-                "<a href='"+process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Confirmado'>Confirmar</a> ou " +
-                "<a href='"+process.env.CURRENT_DOMAIN+"/api/confirmations/appointment/%s/%s?status=Cancelado'>Cancelar</a> ";
-            var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:m");
-
-            var from = doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">";
-            var to = patient.name + "<"+patient.contacts.email+">";
-            var subject = util.format("Confirmação de consulta com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime);
-            var html = util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime, appointment._id, appointment.confirmationToken, appointment._id, appointment.confirmationToken);
-            mail.send(from, to, subject, html, function(error, response){
-                if(error){
-                    console.info(error);
-                    callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."})
+            fs.readFile('../emails/appointment-confirmation.htm', 'utf8', function(err, html) {
+                if (err) {
+                    console.log(err);
+                    return callback(err);
                 }
-                queues.dispatch('notificationSended', { patient: patient._id });
-                callback(null, "Solicitaçao de confirmaçao enviada.");
+
+                var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:m");
+                var confirm = util.format("<a href='%s/api/confirmations/appointment/%s/%s?status=Confirmado'>Confirmar</a>", process.env.CURRENT_DOMAIN, appointment._id, appointment.confirmationToken);
+                var cancel = util.format("<a href='%s/api/confirmations/appointment/%s/%s?status=Cancelado'>Cancelar</a> ", process.env.CURRENT_DOMAIN, appointment._id, appointment.confirmationToken);
+
+                var from = doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">";
+                var to = patient.name + "<"+patient.contacts.email+">";
+                var subject = util.format("Confirmação de consulta com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime);
+                var html = html
+                        .replace(/<name>/g, patient.name)
+                        .replace(/<date>/g, appointmentDateTime)
+                        .replace(/<confirm>/g, confirm)
+                        .replace(/<cancel>/g, cancel)
+                    ;
+
+                mail.send(from, to, subject, html, function(error, response){
+                    if(error){
+                        console.info(error);
+                        callback({status : 500, message: "Houve algum problema ao solicitar a confirmaçao."})
+                    }
+                    queues.dispatch('notificationSended', { patient: patient._id });
+                    callback(null, "Solicitaçao de confirmaçao enviada.");
+                });
             });
+
+
         }
     ], function end(err, message){
         if(err){
@@ -307,15 +322,25 @@ function sendScheduleSuccessNotification(appointment){
 	Patients.findById(appointment.patient.id, function(err, patient){
 		if(patient.contacts.email){
 			Doctors.findById(appointment.doctor, function(err, doctor){
-				var message = "Oi %s, você tem uma consulta agendada com o %s %s às %s.";
-				var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:mm");
+                fs.readFile('../emails/appointment-schedulled.htm', 'utf8', function(err, html) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    var appointmentDateTime = moment(appointment.date).format("D/M/YYYY H:mm");
 
-                var from    = doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">";
-                var to      = patient.name + "<"+patient.contacts.email+">";
-                var subject = util.format("Consulta agendada com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime);
-                var html    = util.format(message, patient.name, doctor.sex, doctor.name, appointmentDateTime);
-                mail.send(from, to, subject, html);
-                queues.dispatch('notificationSended', { patient: patient._id });
+                    var from    = doctor.sex + doctor.name + "<"+process.env.MAIL_USER+">";
+                    var to      = patient.name + "<"+patient.contacts.email+">";
+                    var subject = util.format("Consulta agendada com %s %s às %s", doctor.sex, doctor.name, appointmentDateTime);
+                    html = html
+                        .replace(/<name>/g, patient.name)
+                        .replace(/<date>/g, appointmentDateTime)
+                    ;
+                    mail.send(from, to, subject, html);
+                    queues.dispatch('notificationSended', { patient: patient._id });
+                });
+
+
 			});
 		};
 	});
